@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Dubai&display=swap');
+
+body {
+    font-family: 'Dubai';
+    margin: 0;
+    padding: 0;
+    background-color: #fff5f5;
+}
+.navbar0 {
+    background-color: #e60023; /* قرمز تیره */
+    padding: 10px;
+    color: white;
+    text-align: center;
+    font-size: 1.5em;
+    font-family: dubai;
+}
+.navbar1 {
+    background-color: #e60023; /* قرمز تیره */
+    padding: 5px;
+    color: white;
+    text-align: center;
+    font-size: 1.5em;
+    font-family: dubai;
+}
+.navbar2 {
+    background-color: #e60023;
+    padding: 10px;
+    color: white;
+    text-align: center;
+    font-size: 1em;
+    font-family: dubai;
+}
+.logo1 {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 170px;
+    top: 15px;
+    z-index: 2;
+}
+.logo2 {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 800px;
+    top: 15px;
+    z-index: 2;
+}
+/* تنظیمات برای موبایل (رزولوشن‌های کوچک‌تر) */
+@media (max-width: 768px) {
+    .logo1, .logo2 {
+        display: none; /* آیکون‌ها مخفی می‌شوند */
+    }
+}
+.chat-container {
+    width: 50%;
+    margin: 50px auto;
+    border: 1px solid #e60023;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(230, 0, 35, 0.2);
+    font-family: dubai;
+}
+#chat-box {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fffafa;
+    font-family: dubai;
+}
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+    font-family: dubai;
+}
+.user-message {
+    background-color: #ffccd5; /* صورتی روشن */
+    text-align: right;
+    margin-left: auto;
+    color: #e60023;
+    font-family: dubai;
+}
+.bot-message {
+    background-color: #f2f2f2; /* خاکستری روشن */
+    text-align: left;
+    margin-right: auto;
+    color: #333;
+    font-family: dubai;
+}
+.input-container {
+    display: flex;
+    align-items: center;
+    font-family: dubai;
+}
+#user-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-family: dubai;
+}
+.send-button {
+    background-color: #e60023;
+    color: white;
+    border: none;
+    border-radius: 100%;
+    padding: 15px 15px;
+    cursor: pointer;
+    font-family: dubai;
+}
+.send-button:hover {
+    background-color: #cc001f;
+    font-family: dubai;
+}
+.arrow-up {
+    border: solid white;
+    border-width: 0 4px 4px 0;
+    display: inline-block;
+    padding: 5px;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    font-family: dubai;
+}
+
+.quote-box {
+    font-family: "Times New Roman", serif;
+    font-size: 20px;
+    text-align: justify;
+    direction: rtl; /* متن راست‌چین شود */
+    color: #333;
+    position: relative;
+    margin: 30px auto;
+    padding: 20px 30px;
+    background-color: #fefaf5;
+    border: 1px solid #e0d3c5;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    line-height: 1.8;
+    font-family: 'Dubai';
+  }
+
+  .quote-box::before {
+    content: '“';
+    font-size: 80px;
+    color: #e0d3c5;
+    position: absolute;
+    top: -10px;
+    right: 20px; /* علامت نقل قول بالا به سمت راست */
+  }
+
+  .quote-box::after {
+    content: '”';
+    font-size: 80px;
+    color: #e0d3c5;
+    position: absolute;
+    bottom: -30px;
+    left: 20px; /* علامت نقل قول پایین به سمت چپ */
+    transform: rotate(180deg);
+  }
+
+.afdgfr {
+    font-size: medium;
+}
