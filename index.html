@@ -175,5 +175,11 @@
         });
 
     </script>    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // انتخاب تمام متن‌های صفحه
+            document.body.innerHTML = document.body.innerHTML.replace(/@(\w+)/g, '<a href="https://birdsnest.ir/$1">@$1</a>');
+        });
+    </script>
 </body>
 </html>
