@@ -72,6 +72,13 @@ body {
     background-color: #fffafa;
     font-family: dubai;
 }
+
+@media (max-width: 768px) {
+    .chat-container {
+        width: 80%;
+    }
+}
+
 .message {
     margin: 10px 0;
     padding: 10px;
@@ -109,11 +116,9 @@ body {
 .send-button {
     background-color: #e60023;
     color: white;
-    border: none;
-    border-radius: 100%;
+    border-radius: 50%;
     padding: 15px 15px;
-    cursor: pointer;
-    font-family: dubai;
+    font-family: dubai;ش
 }
 .send-button:hover {
     background-color: #cc001f;
