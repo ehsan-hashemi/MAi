@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAi - GhatM</title>
+    <title>MAi - ChatM</title>
     <link rel="icon" type="image/png" href="MAI.png">
     <link rel="stylesheet" href="./styles.css">
 </head>
@@ -13,8 +13,7 @@
     <div class="navbar2">M Programming Group</div>
     <img class="logo1" src="MAI.png" alt="logo_MAi">
     <img class="logo2" src="لوگو گروه برنامه نویسی Mبرش داده شده.png" alt="logo_M Programming Group">
-    <p class="abtph">توجه: GhatM از هوش مصنوعی استفاده نمی‌کند و ممکن است پیام های شما را درک نکند! <a href="/about_ghatbotghatm/">برای جزئیات بیشتر وارد شوید.</a></p>
-    <p class="abtph">اگر می‌خواهید با هوش مصنوعی و GhatGPT صحبت کنید، <a href="/GhatGPT/">اینجا کلیک کنید.</a></p>
+    <p class="abtph">توجه: ChatM از هوش مصنوعی استفاده نمی‌کند و ممکن است پیام های شما را درک نکند! <a href="/about_ghatbotghatm/">برای جزئیات بیشتر وارد شوید.</a></p>
     <div class="chat-container">
         <div id="chat-box"></div>
         <div class="input-container">
@@ -24,6 +23,7 @@
             </button>
         </div>
     </div>
+    <p style="text-align: center;">@about_ghatbotghatm</p>
 
     <script>
         // پاسخ‌های از پیش تعریف‌شده برای چت‌بات
@@ -109,7 +109,8 @@
             "ایول!": "مرسی! شما هم خیلی خفنید.",
             "عالیه!": "عالی‌تر از شما نداریم!",
             "من که رفتم": "باشه، ولی زود برگردید!",
-            "باور نمی‌کنم": "باورت بشه! من همیشه اینجا هستم."
+            "باور نمی‌کنم": "باورت بشه! من همیشه اینجا هستم.",
+            "؟": "برای دیدن کلمات کلید، @about_ghatbotghatm برو....",
         };
 
 
@@ -175,5 +176,11 @@
         });
 
     </script>    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // انتخاب تمام متن‌های صفحه
+            document.body.innerHTML = document.body.innerHTML.replace(/@(\w+)/g, '<a href="https://mai.ehsan-hashemi.ir/$1">@$1</a>');
+        });
+    </script>
 </body>
 </html>
