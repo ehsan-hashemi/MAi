@@ -238,3 +238,22 @@ pre {
 .abtph {
     text-align: center;
 }
+
+.footer {
+  background-color: #f2f2f2;
+  color: #333;
+  text-align: center;
+  padding: 1em 0;
+  font-size: 0.9rem;
+  border-top: 1px solid #ddd;
+  margin-top: 30px;
+  direction: rtl;
+}
+.footer a {
+  color: #0077cc;
+  text-decoration: none;
+  font-weight: bold;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
