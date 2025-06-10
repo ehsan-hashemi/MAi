@@ -1,7 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Dubai&display=swap');
+@font-face {
+    font-family: "Vazir";
+    src: url("https://dbkhatam.ir/Vazir-Regular.ttf") format("woff2"),
+}
 
 body {
-    font-family: 'Dubai';
+    font-family: "Vazir";
     margin: 0;
     padding: 0;
     background-color: #fff5f5;
@@ -12,7 +15,7 @@ body {
     color: white;
     text-align: center;
     font-size: 1.5em;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .navbar1 {
     background-color: #e60023; /* قرمز تیره */
@@ -20,7 +23,7 @@ body {
     color: white;
     text-align: center;
     font-size: 1.5em;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .navbar2 {
     background-color: #e60023;
@@ -28,7 +31,7 @@ body {
     color: white;
     text-align: center;
     font-size: 1em;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .logo1 {
     width: 100px;
@@ -60,7 +63,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(230, 0, 35, 0.2);
-    font-family: dubai;
+    font-family: "Vazir";
 }
 #chat-box {
     height: 300px;
@@ -70,7 +73,7 @@ body {
     padding: 10px;
     margin-bottom: 10px;
     background-color: #fffafa;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 
 @media (max-width: 768px) {
@@ -84,7 +87,7 @@ body {
     padding: 10px;
     border-radius: 8px;
     max-width: 70%;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .user-message {
     background-color: #ffccd5;
@@ -105,14 +108,14 @@ body {
     overflow-x: auto;
     direction: ltr;
     text-align: left;
-    font-family: monospace;
+    font-family: "Vazir";
 }
 
 .bot-message code {
     background-color: #f5f5f5;
     padding: 2px 4px;
     border-radius: 3px;
-    font-family: monospace;
+    font-family: "Vazir";
 }
 
 .sps21 {
@@ -127,7 +130,7 @@ pre {
       overflow: auto;
     }
     pre code {
-      font-family: Consolas, monospace;
+      font-family: "Vazir";
       font-size: 14px;
     }
     .copy-btn {
@@ -159,7 +162,7 @@ pre {
 .input-container {
     display: flex;
     align-items: center;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 #user-input {
     flex: 1;
@@ -167,18 +170,18 @@ pre {
     border: 1px solid #ddd;
     border-radius: 5px;
     margin-right: 10px;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .send-button {
     background-color: #e60023;
     color: white;
     border-radius: 50%;
     padding: 15px 15px;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .send-button:hover {
     background-color: #cc001f;
-    font-family: dubai;
+    font-family: "Vazir";
 }
 .arrow-up {
     border: solid white;
@@ -187,11 +190,11 @@ pre {
     padding: 5px;
     transform: rotate(-135deg);
     -webkit-transform: rotate(-135deg);
-    font-family: dubai;
+    font-family: "Vazir";
 }
 
 .quote-box {
-    font-family: "Times New Roman", serif;
+    font-family: "Vazir";
     font-size: 20px;
     text-align: justify;
     direction: rtl; /* متن راست‌چین شود */
@@ -205,7 +208,7 @@ pre {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 700px;
     line-height: 1.8;
-    font-family: 'Dubai';
+    font-family: "Vazir";
   }
 
   .quote-box::before {
