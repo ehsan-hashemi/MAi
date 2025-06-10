@@ -119,6 +119,34 @@ body {
     text-align: center;
 }
 
+pre {
+      position: relative;
+      background: #f6f8fa;
+      padding: 1em;
+      border-radius: 10px;
+      overflow: auto;
+    }
+    pre code {
+      font-family: Consolas, monospace;
+      font-size: 14px;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      background-color: #e60023;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    .copy-btn:hover {
+      opacity: 1;
+    }
+
 .bot-message blockquote {
     border-right: 5px solid #e60023;
     background-color: #fff0f0;

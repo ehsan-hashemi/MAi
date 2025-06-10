@@ -7,6 +7,32 @@
     <link rel="icon" type="image/png" href="MAI.png">
     <link rel="stylesheet" href="/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+pre {
+  position: relative;
+  background: #f6f8fa;
+  padding: 1em;
+  border-radius: 10px;
+  overflow: auto;
+  direction: ltr;
+}
+.copy-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  background-image: url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.copy-icon:hover {
+  opacity: 1;
+}
+</style>
 </head>
 <body>
     <div class="navbar0"></div>
@@ -72,20 +98,42 @@
     }
 
     function appendMessage(sender, message) {
-    const chatBox = document.getElementById("chat-box");
-    const messageElem = document.createElement("div");
+  const chatBox = document.getElementById("chat-box");
+  const messageElem = document.createElement("div");
 
-    if (sender === "user") {
-        messageElem.className = "message user-message";
-        messageElem.innerText = message;
-    } else {
-        messageElem.className = "message bot-message";
-        messageElem.innerHTML = marked.parse(message); // رندر Markdown
-    }
+  if (sender === "user") {
+    messageElem.className = "message user-message";
+    messageElem.innerText = message;
+  } else {
+    messageElem.className = "message bot-message";
+    messageElem.innerHTML = marked.parse(message);
 
-    chatBox.appendChild(messageElem);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    // پیدا کردن بلوک‌های کد و افزودن دکمه کپی
+    messageElem.querySelectorAll("pre").forEach(pre => {
+      const copyBtn = document.createElement("div");
+      copyBtn.className = "copy-icon";
+      copyBtn.title = "کپی کردن کد";
+
+      copyBtn.onclick = () => {
+        const codeText = pre.innerText;
+        navigator.clipboard.writeText(codeText).then(() => {
+          copyBtn.style.opacity = "1";
+          copyBtn.style.filter = "grayscale(100%)";
+          setTimeout(() => {
+            copyBtn.style.filter = "none";
+            copyBtn.style.opacity = "0.7";
+          }, 1500);
+        });
+      };
+
+      pre.appendChild(copyBtn);
+    });
+  }
+
+  chatBox.appendChild(messageElem);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 </script>
 
 
