@@ -87,19 +87,43 @@ body {
     font-family: dubai;
 }
 .user-message {
-    background-color: #ffccd5; /* صورتی روشن */
+    background-color: #ffccd5;
     text-align: right;
     margin-left: auto;
     color: #e60023;
-    font-family: dubai;
 }
 .bot-message {
-    background-color: #f2f2f2; /* خاکستری روشن */
+    background-color: #f2f2f2;
     text-align: left;
     margin-right: auto;
     color: #333;
-    font-family: dubai;
 }
+.bot-message pre {
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    direction: ltr;
+    text-align: left;
+    font-family: monospace;
+}
+
+.bot-message code {
+    background-color: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.bot-message blockquote {
+    border-right: 5px solid #e60023;
+    background-color: #fff0f0;
+    padding: 10px;
+    margin: 10px 0;
+    color: #555;
+    font-style: italic;
+}
+
 .input-container {
     display: flex;
     align-items: center;

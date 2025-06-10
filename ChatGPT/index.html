@@ -1,100 +1,59 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAi - ChatM</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #121212;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 400px;
-            background: #1E1E1E;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-        #chat-box {
-            height: 300px;
-            overflow-y: auto;
-            padding: 10px;
-            background: #252525;
-            border-radius: 5px;
-        }
-        .input-container {
-            display: flex;
-            margin-top: 10px;
-        }
-        textarea {
-            flex: 1;
-            padding: 10px;
-            border-radius: 5px;
-            background: #333;
-            color: white;
-            border: none;
-        }
-        .send-button {
-            background: #0078FF;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-        }
-    </style>
+    <title>GPT-4o-mini Example</title>
 </head>
 <body>
-
-    <div class="chat-container">
-        <div id="chat-box"></div>
-        <div class="input-container">
-            <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
-            <button class="send-button" onclick="sendMessage()">ارسال</button>
-        </div>
-    </div>
+    <h1>GPT-4o-mini Example</h1>
+    <div id="response"></div>
 
     <script>
-        async function sendMessage() {
-            const userInput = document.getElementById("user-input").value;
-            const chatBox = document.getElementById("chat-box");
-
-            if (userInput.trim() === "") return;
-
-            // نمایش پیام کاربر
-            chatBox.innerHTML += `<div class="message user-message">${userInput}</div>`;
+        async function getAIResponse() {
+            const apiUrl = 'https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions';
+            const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU1MDA4NH0.yEhFnrwpT10ZIMfPmZV1Y5dXCa34pC52WX9iXOfplz0'; 
+            
+            const requestData = {
+                model: 'openai/gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'user',
+                        content: 'معنای زندگی چیست؟'
+                    }
+                ]
+            };
 
             try {
-                const response = await fetch("https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions", {
-                    method: "POST",
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTQ4MTMzNn0.azb2M2ouSV_nWaUMt3F47OxQWb2qU7hnFIUdabTS5TA"
+                        'Content-Type': 'application/json',
+                        'Authorization': Bearer ${apiKey}
                     },
-                    body: JSON.stringify({
-                        model: "openai/gpt-4o-mini",
-                        messages: [{ role: "user", content: userInput }]
-                    })
+                    body: JSON.stringify(requestData)
                 });
 
+                if (!response.ok) {
+                    throw new Error(HTTP error! status: ${response.status});
+                }
+
                 const data = await response.json();
-                const botReply = data.choices[0]?.message?.content || "خطایی رخ داده است!";
-                chatBox.innerHTML += `<div class="message bot-message">${botReply}</div>`;
-
+                const aiResponse = data.choices[0].message.content;
+                
+                // Display the response on the page
+                document.getElementById('response').innerText = aiResponse;
+                
+                // Also log to console
+                console.log(aiResponse);
             } catch (error) {
-                chatBox.innerHTML += `<div class="message bot-message">مشکلی پیش آمده: ${error.message}</div>`;
+                console.error('Error:', error);
+                document.getElementById('response').innerText = 'Error fetching response: ' + error.message;
             }
-
-            // پاک کردن ورودی و اسکرول به پایین
-            document.getElementById("user-input").value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        // Call the function when the page loads
+        window.onload = getAIResponse;
     </script>
 </body>
 </html>
