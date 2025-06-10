@@ -1,113 +1,85 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAi - ChatM</title>
-    <link rel="icon" type="image/png" href="MAI.png">
-    <link rel="stylesheet" href="/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MAi - Gemini</title>
+  <link rel="stylesheet" href="/styles.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div class="navbar0"></div>
-    <div class="navbar1">MAi - Gemini</div>
-    <div class="navbar2">Ehsan Group</div>
-    <!-- <p class="abtph">توجه: ChatM از هوش مصنوعی استفاده نمی‌کند و ممکن است پیام های شما را درک نکند! <a href="/about_ghatbotghatm/">برای جزئیات بیشتر وارد شوید.</a></p> -->
-    <div class="chat-container">
-        <div id="chat-box"></div>
-        <div class="input-container">
-            <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
-            <button class="send-button" onclick="sendMessage()">
-                <i class="arrow-up"></i>
-            </button>
-        </div>
+  <div class="navbar0"></div>
+  <div class="navbar1">MAi - Gemini</div>
+  <div class="navbar2">Ehsan Group</div>
+  <div class="chat-container">
+    <div id="chat-box"></div>
+    <div class="input-container">
+      <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
+      <button class="send-button" onclick="sendMessage()">
+        <i class="arrow-up"></i>
+      </button>
     </div>
-    <p style="text-align: center;">همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc</p>
-    <p style="text-align: center;">با هوش مصنوعی Chat GPT هم صحبت کنید: @ChatGPT</p>
+  </div>
+  <p style="text-align: center;">همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc</p>
+  <p style="text-align: center;">با هوش مصنوعی Chat GPT هم صحبت کنید: @ChatGPT</p>
 
-    <script>
+  <script>
     async function sendMessage() {
-        const userInputElement = document.getElementById("user-input");
-        const userInput = userInputElement.value.trim();
-        if (!userInput) return;
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
 
-        appendMessage("user", userInput);
-        userInputElement.value = "";
+      appendMessage("user", message);
+      input.value = "";
 
-        const apiUrl = 'https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1';
-        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU1MjA5MX0.mXMBLaOIMwadr4UgzXlhC-v53eMA_KEMj2giYIWTOYU';
+      const apiUrl = "https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions";
+      const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU1MjY1OH0.CMh2rP2EFqvmJ22iVPIwEYsMcR_3gMMT108kkN5cACM";
 
-        const requestData = {
-            model: 'google/gemini-2.0-flash-001',
-            messages: [
-                {
-                    role: 'user',
-                    content: userInput
-                }
-            ]
-        };
+      const requestData = {
+        model: "google/gemini-2.0-flash-001",
+        messages: [
+          {
+            role: "user",
+            content: message
+          }
+        ]
+      };
 
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(requestData)
-            });
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(requestData)
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+        if (!response.ok) throw new Error(`خطا در پاسخ: ${response.status}`);
 
-            const data = await response.json();
-            const aiResponse = data.choices[0].message.content;
-
-            appendMessage("bot", aiResponse);
-        } catch (error) {
-            console.error('Error:', error);
-            appendMessage("bot", 'خطا در دریافت پاسخ: ' + error.message);
-        }
+        const data = await response.json();
+        const reply = data.choices[0].message.content;
+        appendMessage("bot", reply);
+      } catch (err) {
+        appendMessage("bot", "❌ خطا در ارتباط با مدل: " + err.message);
+      }
     }
 
-    function appendMessage(sender, message) {
-    const chatBox = document.getElementById("chat-box");
-    const messageElem = document.createElement("div");
+    function appendMessage(sender, content) {
+      const chatBox = document.getElementById("chat-box");
+      const messageElem = document.createElement("div");
 
-    if (sender === "user") {
+      if (sender === "user") {
         messageElem.className = "message user-message";
-        messageElem.innerText = message;
-    } else {
+        messageElem.innerText = content;
+      } else {
         messageElem.className = "message bot-message";
-        messageElem.innerHTML = marked.parse(message); // رندر Markdown
+        messageElem.innerHTML = marked.parse(content);
+      }
+
+      chatBox.appendChild(messageElem);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
-
-    chatBox.appendChild(messageElem);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-</script>
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
-
-    <script>
-        // اضافه کردن رویداد برای کلیدهای Enter و Shift+Enter
-        $('#user-input').keydown(function (e) {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                $('.send-button').click();
-            } else if (e.key === "Enter" && e.shiftKey) {
-                return true;
-            }
-        });
-
-    </script>    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // انتخاب تمام متن‌های صفحه
-            document.body.innerHTML = document.body.innerHTML.replace(/@(\w+)/g, '<a href="https://mai.ehsan-hashemi.ir/$1">@$1</a>');
-        });
-    </script>
+  </script>
 </body>
 </html>
