@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="navbar0"></div>
-    <div class="navbar1">MAi - Chat GPT</div>
+    <div class="navbar1">MAi - Gemini</div>
     <div class="navbar2">Ehsan Group</div>
     <!-- <p class="abtph">توجه: ChatM از هوش مصنوعی استفاده نمی‌کند و ممکن است پیام های شما را درک نکند! <a href="/about_ghatbotghatm/">برای جزئیات بیشتر وارد شوید.</a></p> -->
     <div class="chat-container">
@@ -23,7 +23,7 @@
         </div>
     </div>
     <p style="text-align: center;">همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc</p>
-    <p style="text-align: center;">با هوش مصنوعی Gemini هم صحبت کنید: @Gemini</p>
+    <p style="text-align: center;">با هوش مصنوعی Chat GPT هم صحبت کنید: @ChatGPT</p>
 
     <script>
     async function sendMessage() {
@@ -34,11 +34,11 @@
         appendMessage("user", userInput);
         userInputElement.value = "";
 
-        const apiUrl = 'https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions';
-        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU1MDA4NH0.yEhFnrwpT10ZIMfPmZV1Y5dXCa34pC52WX9iXOfplz0';
+        const apiUrl = 'https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1';
+        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU1MjA5MX0.mXMBLaOIMwadr4UgzXlhC-v53eMA_KEMj2giYIWTOYU';
 
         const requestData = {
-            model: 'openai/gpt-4o-mini',
+            model: 'google/gemini-2.0-flash-001',
             messages: [
                 {
                     role: 'user',
