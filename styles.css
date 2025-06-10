@@ -115,6 +115,10 @@ body {
     font-family: monospace;
 }
 
+strong {
+    text-align: center;
+}
+
 .bot-message blockquote {
     border-right: 5px solid #e60023;
     background-color: #fff0f0;
@@ -142,7 +146,7 @@ body {
     color: white;
     border-radius: 50%;
     padding: 15px 15px;
-    font-family: dubai;ش
+    font-family: dubai;
 }
 .send-button:hover {
     background-color: #cc001f;
