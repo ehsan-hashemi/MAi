@@ -1,184 +1,210 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MAi - Chat GPT</title>
-    <link rel="icon" type="image/png" href="/MAI.png">
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/png" href="MAI.png" />
+    <link rel="stylesheet" href="/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-pre {
-  position: relative;
-  background: #f6f8fa;
-  padding: 1em;
-  border-radius: 10px;
-  overflow: auto;
-  direction: ltr;
-}
-.copy-icon {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 24px;
-  height: 24px;
-  background-image: url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-.copy-icon:hover {
-  opacity: 1;
-}
-</style>
-</head>
-<body>
+      pre {
+        position: relative;
+        background: #f6f8fa;
+        padding: 1em;
+        border-radius: 10px;
+        overflow: auto;
+        direction: ltr;
+      }
+      .copy-icon {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 24px;
+        height: 24px;
+        background-image: url("https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+      }
+      .copy-icon:hover {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
     <div class="navbar0"></div>
     <div class="navbar1">MAi - Chat GPT</div>
     <div class="navbar2">Ehsan Group</div>
-    <!-- <p class="abtph">توجه: ChatM از هوش مصنوعی استفاده نمی‌کند و ممکن است پیام های شما را درک نکند! <a href="/about_ghatbotghatm/">برای جزئیات بیشتر وارد شوید.</a></p> -->
     <div class="chat-container">
-        <div id="chat-box"></div>
-        <div class="input-container">
-            <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
-            <button class="send-button" onclick="sendMessage()">
-                <i class="arrow-up"></i>
-            </button>
-        </div>
+      <div id="chat-box"></div>
+      <div class="input-container">
+        <textarea
+          id="user-input"
+          placeholder="پیام خود را بنویسید..."
+        ></textarea>
+        <button class="send-button" onclick="sendMessage()">
+          <i class="arrow-up"></i>
+        </button>
+      </div>
     </div>
-    <p style="text-align: center;">همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc</p>
-    <p style="text-align: center;">با هوش مصنوعی Gemini هم صحبت کنید: @Gemini</p>
-<footer class="footer">
-  <div class="footer-content">
-    <p style="direction: ltr;">&copy; <span id="year"></span> MAi - All rights reserved. <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a></p>
-  </div>
-</footer>
-<script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
-
+    <p style="text-align: center">
+      همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc
+    </p>
+    <p style="text-align: center">
+      با هوش مصنوعی Gemini هم صحبت کنید: @Gemini
+    </p>
+    <footer class="footer">
+      <div class="footer-content">
+        <p style="direction: ltr">
+          &copy; <span id="year"></span> MAi - All rights reserved.
+          <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
+        </p>
+      </div>
+    </footer>
     <script>
-const chatHistory = [];
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-const apiUrl = 'https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions';
-const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU3MTYwN30.hm6vYGMaXd2L6zXItLIShAS_hTxBtKuk4SIAZ_y9788';
+      const chatHistory = [];
+      const apiUrl =
+        "https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions";
+      const apiKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU3MTYwN30.hm6vYGMaXd2L6zXItLIShAS_hTxBtKuk4SIAZ_y9788";
 
-async function sendMessage() {
-    const userInputElement = document.getElementById("user-input");
-    const userInput = userInputElement.value.trim();
-    if (!userInput) return;
+      async function sendMessage() {
+        const userInputElement = document.getElementById("user-input");
+        const userInput = userInputElement.value.trim();
+        if (!userInput) return;
 
-    appendMessage("user", userInput); // فقط پیام خود کاربر در چت نمایش داده می‌شود
-    userInputElement.value = "";
+        appendMessage("user", userInput);
+        userInputElement.value = "";
 
-    // گرفتن تاریخ، ساعت و روز هفته
-    const now = new Date();
-    const weekDays = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-    const today = weekDays[now.getDay()];
-    const faDateTime = now.toLocaleString('fa-IR');
+        const now = new Date();
+        const weekDays = [
+          "یکشنبه",
+          "دوشنبه",
+          "سه‌شنبه",
+          "چهارشنبه",
+          "پنجشنبه",
+          "جمعه",
+          "شنبه",
+        ];
+        const today = weekDays[now.getDay()];
+        const faDateTime = now.toLocaleString("fa-IR");
 
-    // اضافه کردن تاریخ، ساعت و روز هفته به ورودی هوش مصنوعی (نامرئی برای کاربر)
-    const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
+        const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
 
-    chatHistory.push({ role: "user", content: enrichedInput });
+        chatHistory.push({ role: "user", content: enrichedInput });
 
-    const recentMessages = chatHistory.slice(-50);
+        const requestData = {
+          model: "openai/gpt-4o-mini",
+          messages: chatHistory.slice(-20),
+        };
 
-    const requestData = {
-        model: 'openai/gpt-4o-mini',
-        messages: recentMessages
-    };
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
+        try {
+          const response = await fetch(apiUrl, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
             },
-            body: JSON.stringify(requestData)
-        });
+            body: JSON.stringify(requestData),
+          });
 
-        if (!response.ok) {
+          if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const aiResponse = data.choices[0].message.content;
+
+          chatHistory.push({ role: "assistant", content: aiResponse });
+          appendMessage("bot", aiResponse);
+        } catch (error) {
+          console.error("Error:", error);
+          appendMessage("bot", "خطا در دریافت پاسخ: " + error.message);
+        }
+      }
+
+      function appendMessage(sender, message) {
+        const chatBox = document.getElementById("chat-box");
+        const messageElem = document.createElement("div");
+
+        if (sender === "user") {
+          messageElem.className = "message user-message";
+          messageElem.innerText = message;
+          chatBox.appendChild(messageElem);
+        } else {
+          messageElem.className = "message bot-message";
+          const contentContainer = document.createElement("div");
+          messageElem.appendChild(contentContainer);
+          chatBox.appendChild(messageElem);
+
+          let index = 0;
+          const interval = setInterval(() => {
+            if (index < message.length) {
+              contentContainer.innerHTML = marked.parse(
+                message.slice(0, index + 1)
+              );
+              addCopyButtons(contentContainer);
+              chatBox.scrollTop = chatBox.scrollHeight;
+              index++;
+            } else {
+              clearInterval(interval);
+            }
+          }, 20);
         }
 
-        const data = await response.json();
-        const aiResponse = data.choices[0].message.content;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
 
-        chatHistory.push({ role: "assistant", content: aiResponse });
-        appendMessage("bot", aiResponse);
-    } catch (error) {
-        console.error('Error:', error);
-        appendMessage("bot", 'خطا در دریافت پاسخ: ' + error.message);
-    }
-}
-
-function appendMessage(sender, message) {
-    const chatBox = document.getElementById("chat-box");
-    const messageElem = document.createElement("div");
-
-    if (sender === "user") {
-        messageElem.className = "message user-message";
-        messageElem.innerText = message;
-        chatBox.appendChild(messageElem);
-    } else {
-        messageElem.className = "message bot-message";
-        const contentContainer = document.createElement("div");
-        messageElem.appendChild(contentContainer);
-        chatBox.appendChild(messageElem);
-
-        let index = 0;
-        const interval = setInterval(() => {
-            if (index < message.length) {
-                contentContainer.innerHTML = marked.parse(message.slice(0, index + 1));
-                addCopyButtons(contentContainer);
-                chatBox.scrollTop = chatBox.scrollHeight;
-                index++;
-            } else {
-                clearInterval(interval);
-            }
-        }, 20);
-    }
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// دکمه کپی برای کدها
-function addCopyButtons(container) {
-    const blocks = container.querySelectorAll('pre');
-    blocks.forEach(pre => {
-        if (!pre.querySelector('.copy-icon')) {
-            const copyBtn = document.createElement('div');
-            copyBtn.className = 'copy-icon';
-            copyBtn.title = 'کپی کد';
-            copyBtn.addEventListener('click', () => {
-                const code = pre.innerText;
-                navigator.clipboard.writeText(code);
-                copyBtn.style.opacity = '1';
-                copyBtn.style.backgroundImage = "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
-                setTimeout(() => {
-                    copyBtn.style.backgroundImage = "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
-                }, 1500);
+      function addCopyButtons(container) {
+        const blocks = container.querySelectorAll("pre");
+        blocks.forEach((pre) => {
+          if (!pre.querySelector(".copy-icon")) {
+            const copyBtn = document.createElement("div");
+            copyBtn.className = "copy-icon";
+            copyBtn.title = "کپی کد";
+            copyBtn.addEventListener("click", () => {
+              const code = pre.innerText;
+              navigator.clipboard.writeText(code);
+              copyBtn.style.opacity = "1";
+              copyBtn.style.backgroundImage =
+                "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
+              setTimeout(() => {
+                copyBtn.style.backgroundImage =
+                  "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
+              }, 1500);
             });
             pre.appendChild(copyBtn);
-        }
-    });
-}
+          }
+        });
+      }
 
-</script>
-
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // انتخاب تمام متن‌های صفحه
-            document.body.innerHTML = document.body.innerHTML.replace(/@(\w+)/g, '<a href="/$1">@$1</a>');
+      document
+        .querySelector("#user-input")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
         });
     </script>
-</body>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"
+      type="text/javascript"
+    ></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.innerHTML = document.body.innerHTML.replace(
+          /@(\w+)/g,
+          '<a href="/$1">@$1</a>'
+        );
+      });
+    </script>
+  </body>
 </html>
