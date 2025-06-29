@@ -89,6 +89,10 @@
                     }
             });
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            // انتخاب تمام متن‌های صفحه
+            document.body.innerHTML = document.body.innerHTML.replace(/@(\w+)/g, '<a href="/$1">@$1</a>');
+        });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
 
