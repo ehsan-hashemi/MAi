@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Vazir";
-    src: url("https://dbkhatam.ir/Vazir-Regular.ttf") format("woff2"),
+    src: url("/Vazir-Regular.ttf") format("woff2"),
 }
 
 body {
