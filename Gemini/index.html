@@ -45,11 +45,20 @@
   <div class="chat-container">
     <div id="chat-box"></div>
     <div class="input-container">
-      <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
-      <button class="send-button" onclick="sendMessage()">
-        <i class="arrow-up"></i>
-      </button>
-    </div>
+        <textarea
+          id="user-input"
+          placeholder="پیام خود را بنویسید..."
+          onkeydown="
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+            sendMessage();
+            }
+          "
+        ></textarea>
+        <button class="send-button" onclick="sendMessage()">
+          <i class="arrow-up"></i>
+        </button>
+      </div>
   </div>
 
   <p style="text-align:center;">همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc</p>
@@ -69,108 +78,126 @@
 </script>
 
   <script>
-    const chatHistory = [];
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    const apiUrl = 'https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions';
-    const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU3NDU0OX0.wTmwJuEnCWc5ui6fUii_UBmeFj_lT-EZ1I3JFxtGzy8';
+const chatHistory = [];
+const apiUrl = "https://api.gapgpt.app/v1/chat/completions";
+const apiKey = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
 
-    async function sendMessage() {
-      const userInputElement = document.getElementById("user-input");
-      const userInput = userInputElement.value.trim();
-      if (!userInput) return;
+async function sendMessage() {
+  const userInputElement = document.getElementById("user-input");
+  const userInput = userInputElement.value.trim();
+  if (!userInput) return;
 
-      appendMessage("user", userInput);
-      userInputElement.value = "";
+  appendMessage("user", userInput);
+  userInputElement.value = "";
 
-      // تاریخ و زمان مرورگر
-      const now = new Date();
-      const weekDays = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-      const today = weekDays[now.getDay()];
-      const faDateTime = now.toLocaleString('fa-IR');
-      const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
+  const now = new Date();
+  const weekDays = [
+    "یکشنبه",
+    "دوشنبه",
+    "سه‌شنبه",
+    "چهارشنبه",
+    "پنجشنبه",
+    "جمعه",
+    "شنبه",
+  ];
+  const today = weekDays[now.getDay()];
+  const faDateTime = now.toLocaleString("fa-IR");
 
-      chatHistory.push({ role: "user", content: enrichedInput });
+  const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
 
-      const requestData = {
-        model: 'google/gemini-2.0-flash-001', // اطمینان از نام صحیح مدل
-        messages: chatHistory.slice(-100)
-      };
+  chatHistory.push({ role: "user", content: enrichedInput });
 
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify(requestData)
-        });
+  const requestData = {
+    model: "gemini-2.5-pro",
+    messages: chatHistory.slice(-100),
+  };
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(requestData),
+    });
 
-        const data = await response.json();
-        const aiResponse = data.choices[0].message.content;
-        chatHistory.push({ role: "assistant", content: aiResponse });
-        appendMessage("bot", aiResponse);
-
-      } catch (error) {
-        console.error('Error:', error);
-        appendMessage("bot", 'خطا در دریافت پاسخ: ' + error.message);
-      }
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    function appendMessage(sender, message) {
-      const chatBox = document.getElementById("chat-box");
-      const messageElem = document.createElement("div");
+    const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
 
-      if (sender === "user") {
-        messageElem.className = "message user-message";
-        messageElem.innerText = message;
-        chatBox.appendChild(messageElem);
+    chatHistory.push({ role: "assistant", content: aiResponse });
+    appendMessage("bot", aiResponse);
+  } catch (error) {
+    console.error("Error:", error);
+    appendMessage("bot", "خطا در دریافت پاسخ: " + error.message);
+  }
+}
+
+function appendMessage(sender, message) {
+  const chatBox = document.getElementById("chat-box");
+  const messageElem = document.createElement("div");
+
+  if (sender === "user") {
+    messageElem.className = "message user-message";
+    messageElem.innerText = message;
+    chatBox.appendChild(messageElem);
+  } else {
+    messageElem.className = "message bot-message";
+    const contentContainer = document.createElement("div");
+    messageElem.appendChild(contentContainer);
+    chatBox.appendChild(messageElem);
+
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < message.length) {
+        contentContainer.innerHTML = marked.parse(message.slice(0, index + 1));
+        addCopyButtons(contentContainer);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        index++;
       } else {
-        messageElem.className = "message bot-message";
-        const contentContainer = document.createElement("div");
-        messageElem.appendChild(contentContainer);
-        chatBox.appendChild(messageElem);
-
-        let index = 0;
-        const interval = setInterval(() => {
-          if (index < message.length) {
-            contentContainer.innerHTML = marked.parse(message.slice(0, index + 1));
-            addCopyButtons(contentContainer);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            index++;
-          } else {
-            clearInterval(interval);
-          }
-        }, 20);
+        clearInterval(interval);
       }
+    }, 20);
+  }
 
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-    function addCopyButtons(container) {
-      const blocks = container.querySelectorAll('pre');
-      blocks.forEach(pre => {
-        if (!pre.querySelector('.copy-icon')) {
-          const copyBtn = document.createElement('div');
-          copyBtn.className = 'copy-icon';
-          copyBtn.title = 'کپی کد';
-          copyBtn.addEventListener('click', () => {
-            const code = pre.innerText;
-            navigator.clipboard.writeText(code);
-            copyBtn.style.opacity = '1';
-            copyBtn.style.backgroundImage = "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
-            setTimeout(() => {
-              copyBtn.style.backgroundImage = "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
-            }, 1500);
-          });
-          pre.appendChild(copyBtn);
-        }
+function addCopyButtons(container) {
+  const blocks = container.querySelectorAll("pre");
+  blocks.forEach((pre) => {
+    if (!pre.querySelector(".copy-icon")) {
+      const copyBtn = document.createElement("div");
+      copyBtn.className = "copy-icon";
+      copyBtn.title = "کپی کد";
+      copyBtn.addEventListener("click", () => {
+        const code = pre.innerText;
+        navigator.clipboard.writeText(code);
+        copyBtn.style.opacity = "1";
+        copyBtn.style.backgroundImage =
+          "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
+        setTimeout(() => {
+          copyBtn.style.backgroundImage =
+            "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
+        }, 1500);
       });
+      pre.appendChild(copyBtn);
     }
+  });
+}
+
+document.querySelector("#user-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
