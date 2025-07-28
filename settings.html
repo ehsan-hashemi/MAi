@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAi – تنظیمات</title>
+  <link rel="icon" href="/MAI.png" />
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- Statsfa Website Analytics Start -->
+  <script data-host="https://statsfa.com" data-dnt="false"
+          src="https://statsfa.com/js/script.js"
+          id="ZwSg9rf6GA" async defer></script>
+  <!-- Statsfa Website Analytics End -->
+</head>
+<body>
+  <!-- نوار بالا -->
+  <div class="navbar0">MAi</div>
+  <div class="navbar1">تنظیمات</div>
+  <div class="navbar2">
+    <a href="/">خانه</a> |
+    <a href="/ChatGPT/index.html">Chat GPT</a> |
+    <a href="/Gemini/index.html">Gemini</a> |
+    <a href="/sessions.html">گفتگوها</a>
+  </div>
+
+  <div class="chat-container" style="width:50%; margin-top:30px;">
+    <!-- بخش تغییر نام -->
+    <section style="margin-bottom:30px;">
+      <h2 class="h1sras">نام کاربر</h2>
+      <input id="name-input" type="text"
+             placeholder="نام شما"
+             style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;" />
+      <button id="save-name" class="send-button"
+              style="margin-top:10px; border-radius:5px; padding:10px 20px;">
+        ذخیره
+      </button>
+    </section>
+
+    <!-- بخش حذف گفتگوها -->
+    <section>
+      <h2 class="h1sras">مدیریت گفتگوها</h2>
+      <button id="clear-all" class="send-button"
+              style="background:#cc001f; border-radius:5px; padding:10px 20px;">
+        حذف همه گفتگوها
+      </button>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; <span id="year"></span> MAi – All rights reserved.
+        <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // سال فوتر
+    document.getElementById("year").textContent = new Date().getFullYear();
+    
+    // بارگذاری نام قبلی
+    const nameInput = document.getElementById("name-input");
+    nameInput.value = localStorage.getItem("userName") || "";
+
+    // ذخیره نام
+    document.getElementById("save-name").onclick = () => {
+      const v = nameInput.value.trim();
+      if (v) {
+        localStorage.setItem("userName", v);
+        alert("نام شما ذخیره شد.");
+      }
+    };
+
+    // حذف همه گفتگوها
+    document.getElementById("clear-all").onclick = () => {
+      if (confirm("آیا مطمئن هستید که همه گفتگوها حذف شوند؟")) {
+        localStorage.removeItem("chatSessions");
+        alert("همه گفتگوها حذف شدند.");
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,262 +1,204 @@
+/* فونت وزیر */
 @font-face {
-    font-family: "Vazir";
-    src: url("/Vazir-Regular.ttf") format("woff2"),
+  font-family: "Vazir";
+  src: url("Vazir-Regular.ttf");
 }
-
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+  font-family: "Vazir";
+}
 body {
-    font-family: "Vazir";
-    margin: 0;
-    padding: 0;
-    background-color: #fff5f5;
-}
-.navbar0 {
-    background-color: #e60023; /* قرمز تیره */
-    padding: 10px;
-    color: white;
-    text-align: center;
-    font-size: 1.5em;
-    font-family: "Vazir";
-}
-.navbar1 {
-    background-color: #e60023; /* قرمز تیره */
-    padding: 5px;
-    color: white;
-    text-align: center;
-    font-size: 1.5em;
-    font-family: "Vazir";
-}
-.navbar2 {
-    background-color: #e60023;
-    padding: 10px;
-    color: white;
-    text-align: center;
-    font-size: 1em;
-    font-family: "Vazir";
-}
-.logo1 {
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    left: 170px;
-    top: 15px;
-    z-index: 2;
-}
-.logo2 {
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    left: 800px;
-    top: 15px;
-    z-index: 2;
-}
-/* تنظیمات برای موبایل (رزولوشن‌های کوچک‌تر) */
-@media (max-width: 768px) {
-    .logo1, .logo2 {
-        display: none; /* آیکون‌ها مخفی می‌شوند */
-    }
-}
-.chat-container {
-    width: 50%;
-    margin: 50px auto;
-    border: 1px solid #e60023;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(230, 0, 35, 0.2);
-    font-family: "Vazir";
-}
-#chat-box {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #fffafa;
-    font-family: "Vazir";
-}
-
-@media (max-width: 768px) {
-    .chat-container {
-        width: 80%;
-    }
-}
-
-.message {
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 8px;
-    max-width: 70%;
-    font-family: "Vazir";
-}
-.user-message {
-    background-color: #ffccd5;
-    text-align: right;
-    margin-left: auto;
-    color: #e60023;
-}
-.bot-message {
-    background-color: #f2f2f2;
-    text-align: right;
-    margin-right: auto;
-    color: #333;
-}
-.bot-message pre {
-    background-color: #eee;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-    direction: ltr;
-    text-align: left;
-    font-family: "Vazir";
-}
-
-.bot-message code {
-    background-color: #f5f5f5;
-    padding: 2px 4px;
-    border-radius: 3px;
-    font-family: "Vazir";
-}
-
-.sps21 {
-    text-align: center;
-}
-
-pre {
-      position: relative;
-      background: #f6f8fa;
-      padding: 1em;
-      border-radius: 10px;
-      overflow: auto;
-    }
-    pre code {
-      font-family: "Vazir";
-      font-size: 14px;
-    }
-    .copy-btn {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
-      background-color: #e60023;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      opacity: 0.8;
-    }
-    .copy-btn:hover {
-      opacity: 1;
-    }
-
-.bot-message blockquote {
-    border-right: 5px solid #e60023;
-    background-color: #fff0f0;
-    padding: 10px;
-    margin: 10px 0;
-    color: #555;
-    font-style: italic;
-}
-
-.input-container {
-    display: flex;
-    align-items: center;
-    font-family: "Vazir";
-}
-#user-input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-right: 10px;
-    font-family: "Vazir";
-}
-.send-button {
-    background-color: #e60023;
-    color: white;
-    border-radius: 50%;
-    padding: 15px 15px;
-    font-family: "Vazir";
-}
-.send-button:hover {
-    background-color: #cc001f;
-    font-family: "Vazir";
-}
-.arrow-up {
-    border: solid white;
-    border-width: 0 4px 4px 0;
-    display: inline-block;
-    padding: 5px;
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-    font-family: "Vazir";
-}
-
-.quote-box {
-    font-family: "Vazir";
-    font-size: 20px;
-    text-align: justify;
-    direction: rtl; /* متن راست‌چین شود */
-    color: #333;
-    position: relative;
-    margin: 30px auto;
-    padding: 20px 30px;
-    background-color: #fefaf5;
-    border: 1px solid #e0d3c5;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 700px;
-    line-height: 1.8;
-    font-family: "Vazir";
-  }
-
-  .quote-box::before {
-    content: '“';
-    font-size: 80px;
-    color: #e0d3c5;
-    position: absolute;
-    top: -10px;
-    right: 20px; /* علامت نقل قول بالا به سمت راست */
-  }
-
-  .quote-box::after {
-    content: '”';
-    font-size: 80px;
-    color: #e0d3c5;
-    position: absolute;
-    bottom: -30px;
-    left: 20px; /* علامت نقل قول پایین به سمت چپ */
-    transform: rotate(180deg);
-  }
-
-.afdgfr {
-    font-size: medium;
-}
-
-.h1sras {
-    text-align: center;
-}
-
-.abtph {
-    text-align: center;
-}
-
-.footer {
-  background-color: #f2f2f2;
+  font-family: "Vazir";
+  background: #f9f9f9;
   color: #333;
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+
+/*-overlay و modal برای نام کاربر*/
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.overlay.visible { display: flex; }
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 0.8rem;
   text-align: center;
-  padding: 1em 0;
-  font-size: 0.9rem;
-  border-top: 1px solid #ddd;
-  margin-top: 30px;
-  direction: rtl;
+  width: 90%; max-width: 360px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
-.footer a {
-  color: #0077cc;
-  text-decoration: none;
-  font-weight: bold;
+.modal-logo {
+  width: 80px; margin-bottom: 1rem;
 }
-.footer a:hover {
-  text-decoration: underline;
+.modal h2 {
+  font-size: 1.4rem; margin-bottom: 1rem;
+}
+.modal input {
+  width: 100%; padding: 0.8rem; font-size: 1rem;
+  border: 1px solid #ccc; border-radius: 0.4rem;
+}
+.modal button {
+  margin-top: 1rem;
+  padding: 0.8rem; width: 100%;
+  background: #e60023; color: #fff; border: none;
+  border-radius: 0.4rem; font-size: 1rem; cursor: pointer;
+}
+.modal button:hover { background: #cc001f; }
+
+/* هدر */
+.topbar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  background: #e60023; color: #fff;
+  padding: 1rem;
+}
+.logo-area {
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.logo-area .logo {
+  width: 36px; height: 36px;
+}
+.site-title {
+  font-size: 1.2rem; font-weight: bold;
+}
+.tabs { display: flex; gap: 0.5rem; }
+.tab-btn {
+  background: transparent; border: none;
+  color: #fff; padding: 0.5rem 1rem;
+  border-radius: 0.6rem; cursor: pointer;
+  font-size: 1rem; transition: background 0.2s;
+}
+.tab-btn:hover, .tab-btn.active {
+  background: rgba(255,255,255,0.2);
+}
+.user-credit {
+  font-size: 1rem;
+}
+
+/* نمایها */
+.view {
+  flex: 1; padding: 1rem; overflow: auto;
+}
+.hidden { display: none; }
+
+/* چت */
+.chat-header {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.5rem; margin-bottom: 1rem;
+}
+.chat-header label {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: #fff; padding: 0.4rem;
+  border: 1px solid #e60023; border-radius: 0.4rem;
+}
+.chat-header select { border: none; font-size: 0.95rem; }
+.chat-header button {
+  background: #fff; color: #e60023; border: 1px solid #e60023;
+  padding: 0.4rem 0.8rem; border-radius: 0.4rem; cursor: pointer;
+  font-family: "Vazir";
+}
+.chat-header button:hover {
+  background: #e60023; color: #fff;
+}
+
+.chat-box {
+  background: #fff; border: 1px solid #ddd;
+  border-radius: 0.8rem; padding: 1rem;
+  height: 50vh; overflow-y: auto; margin-bottom: 1rem;
+  scroll-behavior: smooth;
+}
+.msg {
+  max-width: 80%; margin-bottom: 0.6rem;
+  padding: 0.6rem 1rem; border-radius: 1rem;
+  word-wrap: break-word; line-height: 1.4;
+}
+.msg.user {
+  background: #ffd1dc; color: #e60023; margin-left: auto;
+}
+.msg.assistant {
+  background: #f0f0f0; color: #333;
+}
+.msg.error {
+  background: #ffe6e6; color: #c00;
+  border: 1px solid #c00; font-weight: bold;
+}
+
+/* ورودی و دکمه ارسال */
+.input-row {
+  display: flex; gap: 0.5rem;
+  font-family: "Vazir";
+}
+.input-row textarea {
+  flex: 1; resize: none; padding: 0.8rem;
+  font-family: inherit; font-size: 1rem;
+  border: 1px solid #ccc; border-radius: 0.6rem;
+  height: 4rem;
+  font-family: "Vazir";
+}
+.input-row button {
+  width: 3.5rem; background: #e60023; border:none;
+  border-radius: 0.6rem; color: #fff;
+  font-size: 1.2rem; cursor: pointer;
+  font-family: "Vazir";
+}
+.input-row button:hover { background: #cc001f; }
+
+/* لیست گفتگوها */
+.session-row {
+  display: flex; justify-content: space-between;
+  background: #fff; border: 1px solid #ddd;
+  border-radius: 0.6rem; padding: 0.8rem; margin-bottom: 0.5rem;
+}
+.btn.small {
+  background: #e60023; color: #fff; border: none;
+  padding: 0.3rem 0.6rem; border-radius: 0.4rem;
+  cursor: pointer; font-size: 0.85rem;
+  font-family: "Vazir";
+}
+.btn.small:hover { background: #cc001f; }
+
+/* تنظیمات */
+#settings h3 { margin-bottom: 1rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.4rem; }
+.form-group input {
+  width: 100%; padding: 0.6rem; font-size: 1rem;
+  border: 1px solid #ccc; border-radius: 0.4rem;
+
+}
+.form-group button {
+  margin-top: 0.4rem; padding: 0.5rem 1rem;
+  background: #e60023; color: #fff; border: none;
+  border-radius: 0.4rem; cursor: pointer;
+  font-family: "Vazir";
+}
+.form-group button:hover { background: #cc001f; }
+.danger {
+  background: #c00; color: #fff; border: none;
+  padding: 0.6rem 1.2rem; border-radius: 0.4rem;
+  font-family: "Vazir";
+  cursor: pointer; font-size: 1rem;
+}
+.danger:hover { background: #a00; }
+
+/* فوتر */
+.footer {
+  text-align: center; padding: 0.8rem;
+  background: #f0f0f0; font-size: 0.9rem;
+  font-family: "Vazir";
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 768px) {
+  .chat-box { height: 45vh; }
+  .input-row textarea { height: 3.5rem; }
+}
+@media (max-width: 480px) {
+  .topbar { flex-direction: column; gap: 0.6rem; }
+  .logo-area, .user-credit { text-align: center; }
+  .chat-header { flex-direction: column; }
 }

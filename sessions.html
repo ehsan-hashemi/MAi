@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAi – لیست گفتگوها</title>
+  <link rel="icon" href="/MAI.png" />
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- Statsfa Website Analytics Start -->
+  <script data-host="https://statsfa.com" data-dnt="false"
+          src="https://statsfa.com/js/script.js"
+          id="ZwSg9rf6GA" async defer></script>
+  <!-- Statsfa Website Analytics End -->
+</head>
+<body>
+  <!-- نوار بالا -->
+  <div class="navbar0">MAi</div>
+  <div class="navbar1">لیست گفتگوها</div>
+  <div class="navbar2">
+    <a href="/">خانه</a> |
+    <a href="/ChatGPT/index.html">Chat GPT</a> |
+    <a href="/Gemini/index.html">Gemini</a> |
+    <a href="/settings.html">تنظیمات</a>
+  </div>
+
+  <!-- فهرست گفتگوها -->
+  <div class="chat-container" style="width:60%; margin-top:30px;">
+    <div id="sessions-list"></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; <span id="year"></span> MAi – All rights reserved.
+        <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // تنظیم سال در فوتر
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function loadSessions() {
+      return JSON.parse(localStorage.getItem("chatSessions") || "[]");
+    }
+    function saveSessions(sessions) {
+      localStorage.setItem("chatSessions", JSON.stringify(sessions));
+    }
+
+    function renderSessions() {
+      const container = document.getElementById("sessions-list");
+      const sessions = loadSessions();
+      container.innerHTML = "";
+
+      if (!sessions.length) {
+        container.innerHTML = "<p style='text-align:center;'>هنوز گفتگویی وجود ندارد.</p>";
+        return;
+      }
+
+      sessions.forEach(s => {
+        const box = document.createElement("div");
+        box.className = "message bot-message";
+        box.innerHTML = `
+          <strong>${s.name}</strong> — <em>${s.created}</em>
+          <div style="margin-top:8px;">
+            <a href="/ChatGPT/index.html?sessionId=${s.id}"
+               style="margin-right:10px; color:#e60023;">🔎 ادامه ChatGPT</a>
+            <a href="/Gemini/index.html?sessionId=${s.id}"
+               style="margin-right:10px; color:#e60023;">🔎 ادامه Gemini</a>
+            <button data-id="${s.id}"
+                    style="background:#e60023;color:#fff;border:none;
+                           padding:5px 10px;border-radius:5px;cursor:pointer;">
+              حذف
+            </button>
+          </div>
+        `;
+        container.appendChild(box);
+      });
+
+      // رویداد حذف
+      container.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.id;
+          const filtered = loadSessions().filter(s => s.id !== id);
+          saveSessions(filtered);
+          renderSessions();
+        });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", renderSessions);
+  </script>
+</body>
+</html>

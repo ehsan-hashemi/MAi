@@ -1,209 +1,146 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MAi - Gemini</title>
-  <link rel="icon" href="/MAI.png">
-  <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAi – Gemini</title>
+  <link rel="icon" href="/MAI.png" />
+  <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- Statsfa Website Analytics Start -->
-  <script data-host="https://statsfa.com" data-dnt="false" src="https://statsfa.com/js/script.js" id="ZwSg9rf6GA" async defer></script>
-  <!-- Statsfa Website Analytics End -->
-  <style>
-    pre {
-      position: relative;
-      background: #f6f8fa;
-      padding: 1em;
-      border-radius: 10px;
-      overflow: auto;
-      direction: ltr;
-    }
-    .copy-icon {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 24px;
-      height: 24px;
-      background-image: url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s ease;
-    }
-    .copy-icon:hover {
-      opacity: 1;
-    }
-  </style>
 </head>
 <body>
-  <div class="navbar0"></div>
-  <div class="navbar1">MAi - Gemini</div>
-  <div class="navbar2">Ehsan Group</div>
+  <!-- نوار بالا -->
+  <div class="navbar0">MAi</div>
+  <div class="navbar1">Gemini</div>
+  <div class="navbar2">
+    <a href="/">خانه</a> |
+    <a href="/sessions.html">گفتگوها</a> |
+    <a href="/settings.html">تنظیمات</a>
+  </div>
 
-  <div class="chat-container">
+  <!-- فرم دریافت نام -->
+  <div id="name-form" class="chat-container" style="text-align:center;">
+    <h2>نام خود را وارد کنید</h2>
+    <input type="text" id="name-input" placeholder="مثلاً احسان" style="padding:10px; width:80%; border-radius:5px;" />
+    <br /><br />
+    <button onclick="saveName()" class="send-button">شروع</button>
+  </div>
+
+  <!-- چت -->
+  <div id="chat-section" class="chat-container" style="display:none;">
     <div id="chat-box"></div>
     <div class="input-container">
-        <textarea
-          id="user-input"
-          placeholder="پیام خود را بنویسید..."
-          onkeydown="
-            if (event.key === 'Enter' && !event.shiftKey) {
-              event.preventDefault();
-            sendMessage();
-            }
-          "
-        ></textarea>
-        <button class="send-button" onclick="sendMessage()">
-          <i class="arrow-up"></i>
-        </button>
-      </div>
+      <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
+      <button class="send-button" onclick="sendMessage()">
+        <i class="arrow-up"></i>
+      </button>
+    </div>
   </div>
 
-  <p style="text-align:center;">همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc</p>
-  <p style="text-align:center;">با هوش مصنوعی Chat GPT هم صحبت کنید: @ChatGPT</p>
-  <div style="text-align: center;">
-      <a href="http://www.coffeete.ir/Ehsan_Programming_Group" style="text-align: center;">
-       <img src="http://www.coffeete.ir/images/buttons/lemonchiffon.png" style="width:260px; text-align: center;" />
-      </a>
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; <span id="year"></span> MAi – All rights reserved. <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a></p>
     </div>
-<footer class="footer">
-  <div class="footer-content">
-    <p style="direction: ltr;">&copy; <span id="year"></span> MAi - All rights reserved. <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a></p>
-  </div>
-</footer>
-<script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
+  </footer>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-const chatHistory = [];
-const apiUrl = "https://api.gapgpt.app/v1/chat/completions";
-const apiKey = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
+    let userName = localStorage.getItem("userName");
+    if (userName) {
+      document.getElementById("name-form").style.display = "none";
+      document.getElementById("chat-section").style.display = "block";
+    }
 
-async function sendMessage() {
-  const userInputElement = document.getElementById("user-input");
-  const userInput = userInputElement.value.trim();
-  if (!userInput) return;
+    function saveName() {
+      const input = document.getElementById("name-input").value.trim();
+      if (input) {
+        localStorage.setItem("userName", input);
+        location.reload();
+      }
+    }
 
-  appendMessage("user", userInput);
-  userInputElement.value = "";
+    const weekDays = ["یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه","شنبه"];
+    const apiUrl = "https://api.gapgpt.app/v1/chat/completions";
+    const apiKey = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
 
-  const now = new Date();
-  const weekDays = [
-    "یکشنبه",
-    "دوشنبه",
-    "سه‌شنبه",
-    "چهارشنبه",
-    "پنجشنبه",
-    "جمعه",
-    "شنبه",
-  ];
-  const today = weekDays[now.getDay()];
-  const faDateTime = now.toLocaleString("fa-IR");
+    const urlParams = new URLSearchParams(window.location.search);
+    let sessionId = urlParams.get("sessionId");
+    const sessions = JSON.parse(localStorage.getItem("chatSessions") || "[]");
+    let currentSession = sessions.find(s => s.id === sessionId);
 
-  const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
+    if (!currentSession) {
+      sessionId = "session_" + Date.now();
+      currentSession = {
+        id: sessionId,
+        name: localStorage.getItem("userName"),
+        created: new Date().toLocaleString("fa-IR"),
+        messages: []
+      };
+      sessions.push(currentSession);
+      localStorage.setItem("chatSessions", JSON.stringify(sessions));
+      window.history.replaceState(null, "", `?sessionId=${sessionId}`);
+    }
 
-  chatHistory.push({ role: "user", content: enrichedInput });
+    function appendMessage(sender, message) {
+      const chatBox = document.getElementById("chat-box");
+      const msgDiv = document.createElement("div");
+      msgDiv.className = sender === "user" ? "message user-message" : "message bot-message";
+      msgDiv.innerHTML = marked.parse(message);
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-  const requestData = {
-    model: "gemini-2.5-pro",
-    messages: chatHistory.slice(-100),
-  };
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(requestData),
+    currentSession.messages.forEach(msg => {
+      appendMessage(msg.role === "assistant" ? "bot" : "user", msg.content);
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    async function sendMessage() {
+      const inputEl = document.getElementById("user-input");
+      const text = inputEl.value.trim();
+      if (!text) return;
 
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+      const now = new Date();
+      const faDate = now.toLocaleString("fa-IR");
+      const today = weekDays[now.getDay()];
+      const enriched = `${text}\n\n(نام کاربر: ${userName} | تاریخ: ${faDate} | روز: ${today})`;
 
-    chatHistory.push({ role: "assistant", content: aiResponse });
-    appendMessage("bot", aiResponse);
-  } catch (error) {
-    console.error("Error:", error);
-    appendMessage("bot", "خطا در دریافت پاسخ: " + error.message);
-  }
-}
+      currentSession.messages.push({ role: "user", content: text, timestamp: faDate });
+      localStorage.setItem("chatSessions", JSON.stringify(sessions));
+      appendMessage("user", text);
+      inputEl.value = "";
 
-function appendMessage(sender, message) {
-  const chatBox = document.getElementById("chat-box");
-  const messageElem = document.createElement("div");
-
-  if (sender === "user") {
-    messageElem.className = "message user-message";
-    messageElem.innerText = message;
-    chatBox.appendChild(messageElem);
-  } else {
-    messageElem.className = "message bot-message";
-    const contentContainer = document.createElement("div");
-    messageElem.appendChild(contentContainer);
-    chatBox.appendChild(messageElem);
-
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < message.length) {
-        contentContainer.innerHTML = marked.parse(message.slice(0, index + 1));
-        addCopyButtons(contentContainer);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 20);
-  }
-
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function addCopyButtons(container) {
-  const blocks = container.querySelectorAll("pre");
-  blocks.forEach((pre) => {
-    if (!pre.querySelector(".copy-icon")) {
-      const copyBtn = document.createElement("div");
-      copyBtn.className = "copy-icon";
-      copyBtn.title = "کپی کد";
-      copyBtn.addEventListener("click", () => {
-        const code = pre.innerText;
-        navigator.clipboard.writeText(code);
-        copyBtn.style.opacity = "1";
-        copyBtn.style.backgroundImage =
-          "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
-        setTimeout(() => {
-          copyBtn.style.backgroundImage =
-            "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
-        }, 1500);
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gemini-2.5-pro",
+          messages: currentSession.messages.slice(-100).map(m => ({
+            role: m.role,
+            content: m.role === "user"
+              ? `${m.content}\n\n(نام کاربر: ${userName} | تاریخ: ${m.timestamp} | روز: ${today})`
+              : m.content
+          }))
+        })
       });
-      pre.appendChild(copyBtn);
+
+      const data = await response.json();
+      const aiText = data.choices[0].message.content;
+      const aiTime = new Date().toLocaleString("fa-IR");
+
+      currentSession.messages.push({ role: "assistant", content: aiText, timestamp: aiTime });
+      localStorage.setItem("chatSessions", JSON.stringify(sessions));
+      appendMessage("bot", aiText);
     }
-  });
-}
 
-document.querySelector("#user-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.body.innerHTML = document.body.innerHTML.replace(/@(\w+)/g, '<a href="/$1">@$1</a>');
+    document.getElementById("user-input").addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
     });
   </script>
 </body>

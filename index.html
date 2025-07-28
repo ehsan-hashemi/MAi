@@ -1,218 +1,427 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAi - Chat GPT</title>
-    <link rel="icon" type="image/png" href="MAI.png" />
-    <link rel="stylesheet" href="/styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Statsfa Website Analytics Start -->
-    <script data-host="https://statsfa.com" data-dnt="false" src="https://statsfa.com/js/script.js" id="ZwSg9rf6GA" async defer></script>
-    <!-- Statsfa Website Analytics End -->
-    <style>
-      pre {
-        position: relative;
-        background: #f6f8fa;
-        padding: 1em;
-        border-radius: 10px;
-        overflow: auto;
-        direction: ltr;
-      }
-      .copy-icon {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        width: 24px;
-        height: 24px;
-        background-image: url("https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png");
-        background-size: contain;
-        background-repeat: no-repeat;
-        cursor: pointer;
-        opacity: 0.7;
-        transition: opacity 0.2s ease;
-      }
-      .copy-icon:hover {
-        opacity: 1;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="navbar0"></div>
-    <div class="navbar1">MAi - Chat GPT</div>
-    <div class="navbar2">Ehsan Group</div>
-    <div class="chat-container">
-      <div id="chat-box"></div>
-      <div class="input-container">
-        <textarea
-          id="user-input"
-          placeholder="پیام خود را بنویسید..."
-        ></textarea>
-        <button class="send-button" onclick="sendMessage()">
-          <i class="arrow-up"></i>
-        </button>
-      </div>
+<head>
+  <meta charset="UTF-8"/>
+  <title>MAi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <link rel="icon" href="MAi.png"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- فرم نام (یک‌بار نمایش) -->
+  <div id="name-form" class="overlay">
+    <div class="modal">
+      <img src="MAi.png" alt="MAi Logo" class="modal-logo"/>
+      <h2>خوش آمدید!</h2>
+      <input type="text" id="name-input" placeholder="نام خود را وارد کنید"/>
+      <button id="name-submit">شروع کنید</button>
     </div>
-    <p style="text-align: center">
-      همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc
-    </p>
-    <p style="text-align: center">
-      با هوش مصنوعی Gemini هم صحبت کنید: @Gemini
-    </p>
-    <div style="text-align: center;">
-      <a href="http://www.coffeete.ir/Ehsan_Programming_Group" style="text-align: center;">
-       <img src="http://www.coffeete.ir/images/buttons/lemonchiffon.png" style="width:260px; text-align: center;" />
-      </a>
+  </div>
+
+  <!-- هدر -->
+  <header class="topbar">
+    <div class="logo-area">
+      <img src="MAi.png" alt="MAi Logo" class="logo"/>
+      <span class="site-title">MAi</span>
     </div>
-    <footer class="footer">
-      <div class="footer-content">
-        <p style="direction: ltr">
-          &copy; <span id="year"></span> MAi - All rights reserved.
-          <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
-        </p>
-      </div>
-    </footer>
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
+    <div class="tabs">
+      <button class="tab-btn active" data-show="chat">چت</button>
+      <button class="tab-btn" data-show="sessions">گفتگوها</button>
+      <button class="tab-btn" data-show="settings">تنظیمات</button>
+    </div>
+    <div class="user-credit">
+      اعتبار: <span id="credit-display"></span>
+    </div>
+  </header>
 
-      const chatHistory = [];
-      const apiUrl =
-        "https://ai.liara.ir/api/v1/6846f3cbf1adf322202df4f1/chat/completions";
-      const apiKey =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODE0OGQ5NDUwOTYzZjkzNDg4OTM1Y2UiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc0OTU3MTYwN30.hm6vYGMaXd2L6zXItLIShAS_hTxBtKuk4SIAZ_y9788";
+  <!-- نمای چت -->
+  <main id="chat" class="view">
+    <div class="chat-header">
+      <label>
+        مدل:
+        <select id="model-select">
+          <option value="gpt-4o">gpt-4o</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+        </select>
+      </label>
+      <button id="new-chat">🆕 چت جدید</button>
+    </div>
+    <div id="chat-box" class="chat-box" tabindex="0"></div>
+    <div class="input-row">
+      <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
+      <button id="send-btn">↑</button>
+    </div>
+  </main>
 
-      async function sendMessage() {
-        const userInputElement = document.getElementById("user-input");
-        const userInput = userInputElement.value.trim();
-        if (!userInput) return;
+  <!-- لیست گفتگوها -->
+  <section id="sessions" class="view hidden">
+    <h3>گفتگوهای شما</h3>
+    <div id="sessions-list"></div>
+  </section>
 
-        appendMessage("user", userInput);
-        userInputElement.value = "";
+  <!-- تنظیمات -->
+  <section id="settings" class="view hidden">
+    <h3>تنظیمات</h3>
+    <div class="form-group">
+      <label>نام کاربری</label>
+      <input id="settings-name" type="text"/>
+      <button id="save-name">ذخیره</button>
+    </div>
+    <div class="form-group">
+      <label>افزایش اعتبار / کد تخفیف</label>
+      <input id="promo-input" placeholder="کد را وارد کنید"/>
+      <button id="redeem-btn">اعمال</button>
+    </div>
+    <div class="form-group">
+      <label>کدهای استفاده‌شده</label>
+      <ul id="used-codes"></ul>
+    </div>
+    <button id="clear-all" class="danger">حذف همهٔ گفتگوها</button>
+  </section>
 
-        const now = new Date();
-        const weekDays = [
-          "یکشنبه",
-          "دوشنبه",
-          "سه‌شنبه",
-          "چهارشنبه",
-          "پنجشنبه",
-          "جمعه",
-          "شنبه",
-        ];
-        const today = weekDays[now.getDay()];
-        const faDateTime = now.toLocaleString("fa-IR");
+  <footer class="footer">
+    &copy; <span id="year"></span> MAi - All rights reserved.
+  </footer>
 
-        const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
 
-        chatHistory.push({ role: "user", content: enrichedInput });
+<script>
+(function(){
+  const API_URL      = "https://api.gapgpt.app/v1/chat/completions";
+  const API_KEY      = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
+  const INITIAL_CRED = 10;
+  const PROMO_MULTI  = ["wh5109sh","37ffjshg","8ehfy6w"];
+  const PROMO_UNLIM  = "xallai21001";
 
-        const requestData = {
-          model: "openai/gpt-4o-mini",
-          messages: chatHistory.slice(-100),
-        };
+  let sessions       = JSON.parse(localStorage.getItem("sessions") || "[]");
+  let credits        = JSON.parse(localStorage.getItem("credits") ||
+                          JSON.stringify({ remaining: INITIAL_CRED, unlimited: false, used: [] }));
+  let currentSession = null;
+  let userName       = localStorage.getItem("userName") || "";
 
-        try {
-          const response = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify(requestData),
-          });
+  // المان‌ها
+  const nameForm     = document.getElementById("name-form");
+  const nameInput    = document.getElementById("name-input");
+  const nameSubmit   = document.getElementById("name-submit");
+  const tabs         = document.querySelectorAll(".tab-btn");
+  const views        = document.querySelectorAll(".view");
+  const creditDisp   = document.getElementById("credit-display");
+  const chatBox      = document.getElementById("chat-box");
+  const userInput    = document.getElementById("user-input");
+  const sendBtn      = document.getElementById("send-btn");
+  const modelSel     = document.getElementById("model-select");
+  const newChatBtn   = document.getElementById("new-chat");
+  const sessionsList = document.getElementById("sessions-list");
+  const settingsName = document.getElementById("settings-name");
+  const saveNameBtn  = document.getElementById("save-name");
+  const promoInput   = document.getElementById("promo-input");
+  const redeemBtn    = document.getElementById("redeem-btn");
+  const usedCodes    = document.getElementById("used-codes");
+  const clearAllBtn  = document.getElementById("clear-all");
+  const yearSpan     = document.getElementById("year");
+  yearSpan.textContent = new Date().getFullYear();
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          const aiResponse = data.choices[0].message.content;
-
-          chatHistory.push({ role: "assistant", content: aiResponse });
-          appendMessage("bot", aiResponse);
-        } catch (error) {
-          console.error("Error:", error);
-          appendMessage("bot", "خطا در دریافت پاسخ: " + error.message);
-        }
-      }
-
-      function appendMessage(sender, message) {
-        const chatBox = document.getElementById("chat-box");
-        const messageElem = document.createElement("div");
-
-        if (sender === "user") {
-          messageElem.className = "message user-message";
-          messageElem.innerText = message;
-          chatBox.appendChild(messageElem);
-        } else {
-          messageElem.className = "message bot-message";
-          const contentContainer = document.createElement("div");
-          messageElem.appendChild(contentContainer);
-          chatBox.appendChild(messageElem);
-
-          let index = 0;
-          const interval = setInterval(() => {
-            if (index < message.length) {
-              contentContainer.innerHTML = marked.parse(
-                message.slice(0, index + 1)
-              );
-              addCopyButtons(contentContainer);
-              chatBox.scrollTop = chatBox.scrollHeight;
-              index++;
-            } else {
-              clearInterval(interval);
-            }
-          }, 20);
-        }
-
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
-
-      function addCopyButtons(container) {
-        const blocks = container.querySelectorAll("pre");
-        blocks.forEach((pre) => {
-          if (!pre.querySelector(".copy-icon")) {
-            const copyBtn = document.createElement("div");
-            copyBtn.className = "copy-icon";
-            copyBtn.title = "کپی کد";
-            copyBtn.addEventListener("click", () => {
-              const code = pre.innerText;
-              navigator.clipboard.writeText(code);
-              copyBtn.style.opacity = "1";
-              copyBtn.style.backgroundImage =
-                "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
-              setTimeout(() => {
-                copyBtn.style.backgroundImage =
-                  "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
-              }, 1500);
-            });
-            pre.appendChild(copyBtn);
-          }
-        });
-      }
-
-      document
-        .querySelector("#user-input")
-        .addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-          }
-        });
-    </script>
-
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"
-      type="text/javascript"
-    ></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        document.body.innerHTML = document.body.innerHTML.replace(
-          /@(\w+)/g,
-          '<a href="/$1">@$1</a>'
-        );
+  // نمایش تب
+  tabs.forEach(btn => {
+    btn.onclick = () => {
+      document.querySelector(".tab-btn.active").classList.remove("active");
+      btn.classList.add("active");
+      views.forEach(v => {
+        if (v.id === btn.dataset.show) v.classList.remove("hidden");
+        else v.classList.add("hidden");
       });
-    </script>
-  </body>
+      if (btn.dataset.show === "sessions") renderSessions();
+      if (btn.dataset.show === "settings") renderSettings();
+    };
+  });
+
+  // ذخیره در لوکال‌استوریج
+  function persist() {
+    localStorage.setItem("sessions", JSON.stringify(sessions));
+    localStorage.setItem("credits", JSON.stringify(credits));
+    localStorage.setItem("userName", userName);
+    if (currentSession) {
+      localStorage.setItem("currentSessionId", currentSession.id);
+    }
+  }
+
+  // بروزرسانی نمایش اعتبار
+  function updateCredit() {
+    creditDisp.textContent = credits.unlimited ? "نامحدود" : credits.remaining;
+    persist();
+  }
+  updateCredit();
+
+  // نمایش خطا در چت
+  function showError(msg) {
+    const el = document.createElement("div");
+    el.className = "msg assistant error";
+    el.textContent = msg;
+    chatBox.appendChild(el);
+    scrollToBottom();
+  }
+
+  // یک‌بار پرسش نام
+  function askName() {
+    if (userName) return startChat();
+    nameForm.classList.add("visible");
+  }
+  nameSubmit.onclick = () => {
+    const v = nameInput.value.trim();
+    if (!v) { showError("نام را وارد کنید."); return; }
+    userName = v;
+    localStorage.setItem("userName", userName);
+    nameForm.classList.remove("visible");
+    startChat();
+  };
+  askName();
+
+  // شروع یا بارگذاری سشن
+  function startChat() {
+    let sid = localStorage.getItem("currentSessionId");
+    currentSession = sessions.find(s => s.id === sid);
+    if (!currentSession) {
+      currentSession = {
+        id:     "sess_" + Date.now(),
+        name:   userName,
+        model:  modelSel.value,
+        messages: []
+      };
+      sessions.push(currentSession);
+    }
+    modelSel.value = currentSession.model;
+    renderMessages();
+    persist();
+    document.querySelector('[data-show="chat"]').click();
+  }
+
+  // رندر همه پیام‌ها
+  function renderMessages() {
+    chatBox.innerHTML = "";
+    currentSession.messages.forEach(msg => {
+      appendMessage(msg.role, msg.content);
+    });
+    scrollToBottom();
+  }
+
+  // اضافه کردن پیام با افکت تایپ و رندر Markdown
+  function appendMessage(sender, message) {
+    const messageElem = document.createElement("div");
+    const contentContainer = document.createElement("div");
+    chatBox.appendChild(messageElem);
+
+    if (sender === "user") {
+      messageElem.className = "msg user";
+      messageElem.textContent = message;
+    } else {
+      messageElem.className = "msg assistant";
+      messageElem.appendChild(contentContainer);
+
+      let idx = 0;
+      const timer = setInterval(() => {
+        if (idx < message.length) {
+          const slice = message.slice(0, idx + 1);
+          contentContainer.innerHTML = marked.parse(slice);
+          addCopyButtons(contentContainer);
+          scrollToBottom();
+          idx++;
+        } else {
+          clearInterval(timer);
+        }
+      }, 20);
+    }
+    scrollToBottom();
+  }
+
+  // افزودن دکمه کپی به بلوک‌های کد
+  function addCopyButtons(container) {
+    const blocks = container.querySelectorAll("pre");
+    blocks.forEach(pre => {
+      if (!pre.querySelector(".copy-icon")) {
+        const copyBtn = document.createElement("div");
+        copyBtn.className = "copy-icon";
+        copyBtn.title = "کپی کد";
+        copyBtn.addEventListener("click", () => {
+          navigator.clipboard.writeText(pre.innerText);
+          copyBtn.style.opacity = "1";
+          copyBtn.style.backgroundImage =
+            "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
+          setTimeout(() => {
+            copyBtn.style.backgroundImage =
+              "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
+          }, 1500);
+        });
+        pre.appendChild(copyBtn);
+      }
+    });
+  }
+
+  // اسکرول به پایین
+  function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // ارسال پیام کاربر
+  userInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  sendBtn.onclick = sendMessage;
+
+  function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text) { showError("متن پیام نمی‌تواند خالی باشد."); return; }
+    if (!credits.unlimited && credits.remaining <= 0) {
+      showError("اعتبار شما به پایان رسیده."); return;
+    }
+    if (!credits.unlimited) credits.remaining--;
+    updateCredit();
+
+    currentSession.messages.push({ role: "user", content: text });
+    persist();
+    appendMessage("user", text);
+    userInput.value = "";
+
+    const payload = [
+      ...currentSession.messages,
+      { role: "system", content: `(کاربر: ${userName})` }
+    ];
+    callAPI(payload);
+  }
+
+  // فراخوانی API
+  async function callAPI(msgs) {
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type":  "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model:    modelSel.value,
+          messages: msgs
+        })
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
+      const data = await res.json();
+      if (data.error) {
+        showError(`خطا: ${data.error.message}`); return;
+      }
+      const ai = data.choices[0].message.content;
+      currentSession.messages.push({ role: "assistant", content: ai });
+      persist();
+      appendMessage("assistant", ai);
+
+    } catch (e) {
+      showError("خطا در ارتباط با سرور.");
+      console.error(e);
+    }
+  }
+
+  // چت جدید
+  newChatBtn.onclick = () => {
+    localStorage.removeItem("currentSessionId");
+    startChat();
+  };
+
+  // رندر جلسات
+  function renderSessions() {
+    sessionsList.innerHTML = "";
+    if (!sessions.length) {
+      sessionsList.textContent = "گفتگویی وجود ندارد.";
+      return;
+    }
+    sessions.forEach(s => {
+      const row = document.createElement("div");
+      row.className = "session-row";
+      row.innerHTML = `
+        <span>${s.name} – ${s.id.slice(-6)}</span>
+        <div>
+          <button class="btn small resume" data-id="${s.id}">ادامه</button>
+          <button class="btn small del" data-id="${s.id}">حذف</button>
+        </div>`;
+      sessionsList.appendChild(row);
+    });
+    sessionsList.querySelectorAll(".resume").forEach(b => {
+      b.onclick = () => {
+        localStorage.setItem("currentSessionId", b.dataset.id);
+        startChat();
+      };
+    });
+    sessionsList.querySelectorAll(".del").forEach(b => {
+      b.onclick = () => {
+        sessions = sessions.filter(s => s.id !== b.dataset.id);
+        persist();
+        renderSessions();
+      };
+    });
+  }
+
+  // رندر تنظیمات
+  function renderSettings() {
+    settingsName.value = userName;
+    usedCodes.innerHTML = "";
+    credits.used.forEach(c => {
+      const li = document.createElement("li");
+      li.textContent = c + " ";
+      const btn = document.createElement("button");
+      btn.textContent = "❌"; btn.className = "small";
+      btn.onclick = () => {
+        credits.used = credits.used.filter(x => x !== c);
+        if (c === PROMO_UNLIM) credits.unlimited = false;
+        else if (PROMO_MULTI.includes(c)) credits.remaining -= 50;
+        updateCredit();
+        renderSettings();
+      };
+      li.appendChild(btn);
+      usedCodes.appendChild(li);
+    });
+  }
+
+  // ذخیره نام
+  saveNameBtn.onclick = () => {
+    const v = settingsName.value.trim();
+    if (!v) { showError("نام نمی‌تواند خالی باشد."); return; }
+    userName = v; persist(); showError("نام ذخیره شد.");
+  };
+
+  // اعمال کد تخفیف
+  redeemBtn.onclick = () => {
+    const code = promoInput.value.trim();
+    if (!code) { showError("کد را وارد کنید."); return; }
+    if (credits.used.includes(code)) {
+      showError("این کد قبلاً استفاده شده."); return;
+    }
+    if (code === PROMO_UNLIM) credits.unlimited = true;
+    else if (PROMO_MULTI.includes(code)) credits.remaining += 50;
+    else { showError("کد نامعتبر است."); return; }
+    credits.used.push(code);
+    updateCredit(); renderSettings();
+    promoInput.value = "";
+    showError("کد با موفقیت اعمال شد.");
+  };
+
+  // حذف همه گفتگوها (اعتبار و نام باقی بماند)
+  clearAllBtn.onclick = () => {
+    if (!confirm("همهٔ گفتگوها پاک شود؟")) return;
+    localStorage.removeItem("sessions");
+    localStorage.removeItem("currentSessionId");
+    sessions = [];
+    currentSession = null;
+    document.querySelector('[data-show="chat"]').click();
+    renderMessages();
+  };
+
+})();
+</script>
+
+</body>
 </html>

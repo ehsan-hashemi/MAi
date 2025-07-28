@@ -1,220 +1,169 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MAi - Chat GPT</title>
-    <link rel="icon" type="image/png" href="/MAI.png" />
-    <link rel="stylesheet" href="/styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Statsfa Website Analytics Start -->
-    <script data-host="https://statsfa.com" data-dnt="false" src="https://statsfa.com/js/script.js" id="ZwSg9rf6GA" async defer></script>
-    <!-- Statsfa Website Analytics End -->
-    <style>
-      pre {
-        position: relative;
-        background: #f6f8fa;
-        padding: 1em;
-        border-radius: 10px;
-        overflow: auto;
-        direction: ltr;
-      }
-      .copy-icon {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        width: 24px;
-        height: 24px;
-        background-image: url("https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png");
-        background-size: contain;
-        background-repeat: no-repeat;
-        cursor: pointer;
-        opacity: 0.7;
-        transition: opacity 0.2s ease;
-      }
-      .copy-icon:hover {
-        opacity: 1;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="navbar0"></div>
-    <div class="navbar1">MAi - Chat GPT</div>
-    <div class="navbar2">Ehsan Group</div>
-    <div class="chat-container">
-      <div id="chat-box"></div>
-      <div class="input-container">
-        <textarea
-          id="user-input"
-          placeholder="پیام خود را بنویسید..."
-          onkeydown="
-            if (event.key === 'Enter' && !event.shiftKey) {
-              event.preventDefault();
-            sendMessage();
-            }
-          "
-        ></textarea>
-        <button class="send-button" onclick="sendMessage()">
-          <i class="arrow-up"></i>
-        </button>
-      </div>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MAi – Chat GPT</title>
+  <link rel="icon" href="/MAI.png"/>
+  <link rel="stylesheet" href="/styles.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar0">MAi</div>
+  <div class="navbar1">Chat GPT</div>
+  <div class="navbar2">
+    <a href="/">خانه</a> |
+    <a href="/sessions.html">گفتگوها</a> |
+    <a href="/settings.html">تنظیمات</a>
+  </div>
 
+  <!-- فرم نام کاربر -->
+  <div id="name-form" class="chat-container" style="text-align:center;">
+    <h2>نام خود را وارد کنید</h2>
+    <input type="text" id="name-input" placeholder="مثلاً احسان" />
+    <br/><br/>
+    <button class="send-button" onclick="saveName()">شروع</button>
+  </div>
+
+  <!-- بخش چت -->
+  <div id="chat-section" class="chat-container" style="display:none;">
+    <div id="chat-box"></div>
+    <div class="input-container">
+      <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
+      <button class="send-button" onclick="sendMessage()">
+        <i class="arrow-up"></i>
+      </button>
     </div>
-    <p style="text-align: center">
-      همچنین می‌توانید از چت بات ادبیات ما نیز دیدن کنید: @chatbot_abc
-    </p>
-    <p style="text-align: center">
-      با هوش مصنوعی Gemini هم صحبت کنید: @Gemini
-    </p>
-    <div style="text-align: center;">
-      <a href="http://www.coffeete.ir/Ehsan_Programming_Group" style="text-align: center;">
-       <img src="http://www.coffeete.ir/images/buttons/lemonchiffon.png" style="width:260px; text-align: center;" />
-      </a>
-    </div>
-    <footer class="footer">
-      <div class="footer-content">
-        <p style="direction: ltr">
-          &copy; <span id="year"></span> MAi - All rights reserved.
-          <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
-        </p>
-      </div>
-    </footer>
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
+  </div>
 
-const chatHistory = [];
-const apiUrl = "https://api.gapgpt.app/v1/chat/completions";
-const apiKey = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
+  <footer class="footer">
+    &copy; <span id="year"></span> MAi – All rights reserved.
+    <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
+  </footer>
 
-async function sendMessage() {
-  const userInputElement = document.getElementById("user-input");
-  const userInput = userInputElement.value.trim();
-  if (!userInput) return;
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-  appendMessage("user", userInput);
-  userInputElement.value = "";
+    // ذخیره یا لود نام
+    function saveName() {
+      const v = document.getElementById("name-input").value.trim();
+      if (!v) return alert("لطفاً نام را وارد کنید.");
+      localStorage.setItem("userName", v);
+      location.reload();
+    }
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+      document.getElementById("name-form").style.display = "none";
+      document.getElementById("chat-section").style.display = "block";
+    }
 
-  const now = new Date();
-  const weekDays = [
-    "یکشنبه",
-    "دوشنبه",
-    "سه‌شنبه",
-    "چهارشنبه",
-    "پنجشنبه",
-    "جمعه",
-    "شنبه",
-  ];
-  const today = weekDays[now.getDay()];
-  const faDateTime = now.toLocaleString("fa-IR");
+    // لود سشن
+    const params = new URLSearchParams(window.location.search);
+    let sessionId = params.get("sessionId");
+    const sessions = JSON.parse(localStorage.getItem("chatSessions")||"[]");
+    let current = sessions.find(s=>s.id===sessionId);
+    if (!current) {
+      sessionId = "session_"+Date.now();
+      current = {
+        id: sessionId,
+        name: userName,
+        created: new Date().toLocaleString("fa-IR"),
+        messages: []
+      };
+      sessions.push(current);
+      localStorage.setItem("chatSessions", JSON.stringify(sessions));
+      history.replaceState(null,"",`?sessionId=${sessionId}`);
+    }
 
-  const enrichedInput = `${userInput}\n\n(اطلاعات زمانی مرورگر کاربر: تاریخ: ${faDateTime} | روز هفته: ${today})`;
+    const apiUrl = "https://api.gapgpt.app/v1/chat/completions";
+    const apiKey = "sk-XXX";  // کلید خودتو بذار
+    const weekDays = ["یکشنبه","دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه","شنبه"];
 
-  chatHistory.push({ role: "user", content: enrichedInput });
+    // تایپ افکت
+    function typeEffect(container, text, cb) {
+      let i=0;
+      const interval = setInterval(()=>{
+        container.innerHTML = marked.parse(text.slice(0, i+1));
+        container.parentElement.scrollIntoView({behavior:"smooth"});
+        i++;
+        if(i>=text.length) {
+          clearInterval(interval);
+          if(cb) cb();
+        }
+      }, 20);
+    }
 
-  const requestData = {
-    model: "gpt-4o",
-    messages: chatHistory.slice(-100),
-  };
+    function appendMessage(who, text) {
+      const box = document.getElementById("chat-box");
+      const div = document.createElement("div");
+      div.className = who==="user"?"message user-message":"message bot-message";
+      if (who==="bot") {
+        const inner = document.createElement("div");
+        div.appendChild(inner);
+        typeEffect(inner, text);
+      } else {
+        div.innerText = text;
+        div.style.opacity = 1;
+      }
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(requestData),
+    // رندر تاریخچه
+    current.messages.forEach(m=>{
+      appendMessage(m.role==="assistant"?"bot":"user", m.content);
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // ارسال پیام
+    async function sendMessage() {
+      const ta = document.getElementById("user-input");
+      const txt = ta.value.trim();
+      if (!txt) return;
+      const now = new Date();
+      const faDate = now.toLocaleString("fa-IR");
+      const day = weekDays[now.getDay()];
+
+      // ثبت کاربر
+      current.messages.push({role:"user",content:txt,timestamp:faDate});
+      if(current.messages.length>50) current.messages.shift();
+      localStorage.setItem("chatSessions",JSON.stringify(sessions));
+      appendMessage("user",txt);
+      ta.value="";
+
+      const res = await fetch(apiUrl,{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          Authorization:`Bearer ${apiKey}`
+        },
+        body:JSON.stringify({
+          model:"gpt-4o",
+          messages: current.messages.map(m=>({
+            role: m.role,
+            content: m.role==="user"
+              ? `${m.content}\n(نام: ${userName} | تاریخ: ${m.timestamp} | روز: ${day})`
+              : m.content
+          })).slice(-50)
+        })
+      });
+      const data = await res.json();
+      const aiText = data.choices[0].message.content;
+      const aiTime = new Date().toLocaleString("fa-IR");
+
+      current.messages.push({role:"assistant",content:aiText,timestamp:aiTime});
+      if(current.messages.length>50) current.messages.shift();
+      localStorage.setItem("chatSessions",JSON.stringify(sessions));
+      appendMessage("bot",aiText);
     }
 
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-
-    chatHistory.push({ role: "assistant", content: aiResponse });
-    appendMessage("bot", aiResponse);
-  } catch (error) {
-    console.error("Error:", error);
-    appendMessage("bot", "خطا در دریافت پاسخ: " + error.message);
-  }
-}
-
-function appendMessage(sender, message) {
-  const chatBox = document.getElementById("chat-box");
-  const messageElem = document.createElement("div");
-
-  if (sender === "user") {
-    messageElem.className = "message user-message";
-    messageElem.innerText = message;
-    chatBox.appendChild(messageElem);
-  } else {
-    messageElem.className = "message bot-message";
-    const contentContainer = document.createElement("div");
-    messageElem.appendChild(contentContainer);
-    chatBox.appendChild(messageElem);
-
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < message.length) {
-        contentContainer.innerHTML = marked.parse(message.slice(0, index + 1));
-        addCopyButtons(contentContainer);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 20);
-  }
-
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function addCopyButtons(container) {
-  const blocks = container.querySelectorAll("pre");
-  blocks.forEach((pre) => {
-    if (!pre.querySelector(".copy-icon")) {
-      const copyBtn = document.createElement("div");
-      copyBtn.className = "copy-icon";
-      copyBtn.title = "کپی کد";
-      copyBtn.addEventListener("click", () => {
-        const code = pre.innerText;
-        navigator.clipboard.writeText(code);
-        copyBtn.style.opacity = "1";
-        copyBtn.style.backgroundImage =
-          "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
-        setTimeout(() => {
-          copyBtn.style.backgroundImage =
-            "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
-        }, 1500);
+    document.getElementById("user-input")
+      .addEventListener("keydown", e=>{
+        if(e.key==="Enter" && !e.shiftKey){
+          e.preventDefault();
+          sendMessage();
+        }
       });
-      pre.appendChild(copyBtn);
-    }
-  });
-}
-
-document.querySelector("#user-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-    </script>
-
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"
-      type="text/javascript"
-    ></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        document.body.innerHTML = document.body.innerHTML.replace(
-          /@(\w+)/g,
-          '<a href="/$1">@$1</a>'
-        );
-      });
-    </script>
-  </body>
+  </script>
+</body>
 </html>
