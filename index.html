@@ -6,12 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
   <link rel="icon" href="/MAI.png"/>
   <link rel="stylesheet" href="styles.css"/>
-  <!-- Markdown renderer -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-  <!-- فرم نام (یک‌بار نمایش) -->
   <div id="name-form" class="overlay">
     <div class="modal">
       <img src="/MAI.png" alt="MAi Logo" class="modal-logo"/>
@@ -21,7 +19,6 @@
     </div>
   </div>
 
-  <!-- هدر -->
   <header class="topbar">
     <div class="logo-area">
       <img src="/MAI.png" alt="MAi Logo" class="logo"/>
@@ -31,14 +28,13 @@
       <button class="tab-btn active" data-show="chat">چت</button>
       <button class="tab-btn" data-show="sessions">گفتگوها</button>
       <button class="tab-btn" data-show="settings">تنظیمات</button>
-      <a class="tab-btn" style="" href="https://ehsan-hashemi.ir">سازنده</a>
+      <a class="tab-btn" href="https://ehsan-hashemi.ir">سازنده</a>
     </div>
     <div class="user-credit">
       اعتبار: <span id="credit-display"></span>
     </div>
   </header>
 
-  <!-- نمای چت -->
   <main id="chat" class="view">
     <div class="chat-header">
       <label>
@@ -57,13 +53,11 @@
     </div>
   </main>
 
-  <!-- لیست گفتگوها -->
   <section id="sessions" class="view hidden">
     <h3>گفتگوهای شما</h3>
     <div id="sessions-list"></div>
   </section>
 
-  <!-- تنظیمات -->
   <section id="settings" class="view hidden">
     <h3>تنظیمات</h3>
     <div class="form-group">
@@ -84,348 +78,298 @@
   </section>
 
   <footer class="footer">
-        <p style="direction: ltr">
-            &copy; <span id="year">2025</span> Enter Code - All rights reserved.
-            <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
-        </p>
-    </footer>
+    <p style="direction: ltr">
+      &copy; <span id="year">2025</span> Enter Code - All rights reserved.
+      <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
+    </p>
+  </footer>
 
+  <script>
+  (function(){
+    const API_URL      = "https://api.gapgpt.app/v1/chat/completions";
+    const API_KEY      = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
+    const INITIAL_CRED = 10;
+    const PROMO_MULTI  = ["wh5109sh","37ffjshg","8ehfy6w"];
+    const PROMO_UNLIM  = "xallai21001";
 
-<script>
-(function(){
-  const API_URL      = "https://api.gapgpt.app/v1/chat/completions";
-  const API_KEY      = "sk-KXYGZrOUDvivO5hmX0yrvCZBUJk1HYB4YuuHSl7C88Beou2Y";
-  const INITIAL_CRED = 10;
-  const PROMO_MULTI  = ["wh5109sh","37ffjshg","8ehfy6w"];
-  const PROMO_UNLIM  = "xallai21001";
+    let sessions       = JSON.parse(localStorage.getItem("sessions") || "[]");
+    let credits        = JSON.parse(localStorage.getItem("credits") ||
+                            JSON.stringify({ remaining: INITIAL_CRED, unlimited: false, used: [] }));
+    let currentSession = null;
+    let userName       = localStorage.getItem("userName") || "";
 
-  let sessions       = JSON.parse(localStorage.getItem("sessions") || "[]");
-  let credits        = JSON.parse(localStorage.getItem("credits") ||
-                          JSON.stringify({ remaining: INITIAL_CRED, unlimited: false, used: [] }));
-  let currentSession = null;
-  let userName       = localStorage.getItem("userName") || "";
+    const nameForm     = document.getElementById("name-form");
+    const nameInput    = document.getElementById("name-input");
+    const nameSubmit   = document.getElementById("name-submit");
+    const tabs         = document.querySelectorAll(".tab-btn");
+    const views        = document.querySelectorAll(".view");
+    const creditDisp   = document.getElementById("credit-display");
+    const chatBox      = document.getElementById("chat-box");
+    const userInput    = document.getElementById("user-input");
+    const sendBtn      = document.getElementById("send-btn");
+    const modelSel     = document.getElementById("model-select");
+    const newChatBtn   = document.getElementById("new-chat");
+    const sessionsList = document.getElementById("sessions-list");
+    const settingsName = document.getElementById("settings-name");
+    const saveNameBtn  = document.getElementById("save-name");
+    const promoInput   = document.getElementById("promo-input");
+    const redeemBtn    = document.getElementById("redeem-btn");
+    const usedCodes    = document.getElementById("used-codes");
+    const clearAllBtn  = document.getElementById("clear-all");
+    const yearSpan     = document.getElementById("year");
+    yearSpan.textContent = new Date().getFullYear();
 
-  // المان‌ها
-  const nameForm     = document.getElementById("name-form");
-  const nameInput    = document.getElementById("name-input");
-  const nameSubmit   = document.getElementById("name-submit");
-  const tabs         = document.querySelectorAll(".tab-btn");
-  const views        = document.querySelectorAll(".view");
-  const creditDisp   = document.getElementById("credit-display");
-  const chatBox      = document.getElementById("chat-box");
-  const userInput    = document.getElementById("user-input");
-  const sendBtn      = document.getElementById("send-btn");
-  const modelSel     = document.getElementById("model-select");
-  const newChatBtn   = document.getElementById("new-chat");
-  const sessionsList = document.getElementById("sessions-list");
-  const settingsName = document.getElementById("settings-name");
-  const saveNameBtn  = document.getElementById("save-name");
-  const promoInput   = document.getElementById("promo-input");
-  const redeemBtn    = document.getElementById("redeem-btn");
-  const usedCodes    = document.getElementById("used-codes");
-  const clearAllBtn  = document.getElementById("clear-all");
-  const yearSpan     = document.getElementById("year");
-  yearSpan.textContent = new Date().getFullYear();
-
-  // نمایش تب
-  tabs.forEach(btn => {
-    btn.onclick = () => {
-      document.querySelector(".tab-btn.active").classList.remove("active");
-      btn.classList.add("active");
-      views.forEach(v => {
-        if (v.id === btn.dataset.show) v.classList.remove("hidden");
-        else v.classList.add("hidden");
-      });
-      if (btn.dataset.show === "sessions") renderSessions();
-      if (btn.dataset.show === "settings") renderSettings();
-    };
-  });
-
-  // ذخیره در لوکال‌استوریج
-  function persist() {
-    localStorage.setItem("sessions", JSON.stringify(sessions));
-    localStorage.setItem("credits", JSON.stringify(credits));
-    localStorage.setItem("userName", userName);
-    if (currentSession) {
-      localStorage.setItem("currentSessionId", currentSession.id);
-    }
-  }
-
-  // بروزرسانی نمایش اعتبار
-  function updateCredit() {
-    creditDisp.textContent = credits.unlimited ? "نامحدود" : credits.remaining;
-    persist();
-  }
-  updateCredit();
-
-  // نمایش خطا در چت
-  function showError(msg) {
-    const el = document.createElement("div");
-    el.className = "msg assistant error";
-    el.textContent = msg;
-    chatBox.appendChild(el);
-    scrollToBottom();
-  }
-
-  // یک‌بار پرسش نام
-  function askName() {
-    if (userName) return startChat();
-    nameForm.classList.add("visible");
-  }
-  nameSubmit.onclick = () => {
-    const v = nameInput.value.trim();
-    if (!v) { showError("نام را وارد کنید."); return; }
-    userName = v;
-    localStorage.setItem("userName", userName);
-    nameForm.classList.remove("visible");
-    startChat();
-  };
-  askName();
-
-  // شروع یا بارگذاری سشن
-  function startChat() {
-    let sid = localStorage.getItem("currentSessionId");
-    currentSession = sessions.find(s => s.id === sid);
-    if (!currentSession) {
-      currentSession = {
-        id:     "sess_" + Date.now(),
-        name:   userName,
-        model:  modelSel.value,
-        messages: []
-      };
-      sessions.push(currentSession);
-    }
-    modelSel.value = currentSession.model;
-    renderMessages();
-    persist();
-    document.querySelector('[data-show="chat"]').click();
-  }
-
-  // رندر همه پیام‌ها
-  function renderMessages() {
-    chatBox.innerHTML = "";
-    currentSession.messages.forEach(msg => {
-      appendMessage(msg.role, msg.content);
-    });
-    scrollToBottom();
-  }
-
-  // اضافه کردن پیام با افکت تایپ و رندر Markdown
-  function appendMessage(sender, message) {
-    const messageElem = document.createElement("div");
-    const contentContainer = document.createElement("div");
-    chatBox.appendChild(messageElem);
-
-    if (sender === "user") {
-      messageElem.className = "msg user";
-      messageElem.textContent = message;
-    } else {
-      messageElem.className = "msg assistant";
-      messageElem.appendChild(contentContainer);
-
-      let idx = 0;
-      const timer = setInterval(() => {
-        if (idx < message.length) {
-          const slice = message.slice(0, idx + 1);
-          contentContainer.innerHTML = marked.parse(slice);
-          addCopyButtons(contentContainer);
-          scrollToBottom();
-          idx++;
-        } else {
-          clearInterval(timer);
-        }
-      }, 20);
-    }
-    scrollToBottom();
-  }
-
-  // افزودن دکمه کپی به بلوک‌های کد
-  function addCopyButtons(container) {
-    const blocks = container.querySelectorAll("pre");
-    blocks.forEach(pre => {
-      if (!pre.querySelector(".copy-icon")) {
-        const copyBtn = document.createElement("div");
-        copyBtn.className = "copy-icon";
-        copyBtn.title = "کپی کد";
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(pre.innerText);
-          copyBtn.style.opacity = "1";
-          copyBtn.style.backgroundImage =
-            "url('https://dbkhatam.ir/jss/done_FILL0_wght400_GRAD0_opsz24.png')";
-          setTimeout(() => {
-            copyBtn.style.backgroundImage =
-              "url('https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png')";
-          }, 1500);
+    // نمایش تب‌ها
+    tabs.forEach(btn => {
+      btn.onclick = () => {
+        document.querySelector(".tab-btn.active").classList.remove("active");
+        btn.classList.add("active");
+        views.forEach(v => {
+          v.id === btn.dataset.show
+            ? v.classList.remove("hidden")
+            : v.classList.add("hidden");
         });
-        pre.appendChild(copyBtn);
-      }
+        if (btn.dataset.show === "sessions") renderSessions();
+        if (btn.dataset.show === "settings") renderSettings();
+      };
     });
-  }
 
-  // اسکرول به پایین
-  function scrollToBottom() {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  // ارسال پیام کاربر
-  userInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+    function persist() {
+      localStorage.setItem("sessions", JSON.stringify(sessions));
+      localStorage.setItem("credits", JSON.stringify(credits));
+      localStorage.setItem("userName", userName);
+      if (currentSession) {
+        localStorage.setItem("currentSessionId", currentSession.id);
+      }
     }
-  });
-  sendBtn.onclick = sendMessage;
 
-  function sendMessage() {
-    const text = userInput.value.trim();
-    if (!text) { showError("متن پیام نمی‌تواند خالی باشد."); return; }
-    if (!credits.unlimited && credits.remaining <= 0) {
-      showError("اعتبار شما به پایان رسیده."); return;
+    function updateCredit() {
+      creditDisp.textContent = credits.unlimited ? "نامحدود" : credits.remaining;
+      persist();
     }
-    if (!credits.unlimited) credits.remaining--;
     updateCredit();
 
-    currentSession.messages.push({ role: "user", content: text });
-    persist();
-    appendMessage("user", text);
-    userInput.value = "";
+    function showError(msg) {
+      const el = document.createElement("div");
+      el.className = "msg assistant error";
+      el.textContent = msg;
+      chatBox.appendChild(el);
+      scrollToBottom();
+    }
 
-    const payload = [
-      ...currentSession.messages,
-      { role: "system", content: `(کاربر: ${userName})` }
-    ];
-    callAPI(payload);
-  }
-
-  // فراخوانی API
-  async function callAPI(msgs) {
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type":  "application/json",
-          "Authorization": `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          model:    modelSel.value,
-          messages: msgs
-        })
-      });
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status}: ${errText}`);
-      }
-      const data = await res.json();
-      if (data.error) {
-        showError(`خطا: ${data.error.message}`); return;
-      }
-      const ai = data.choices[0].message.content;
-      currentSession.messages.push({ role: "assistant", content: ai });
+    function askName() {
+      if (userName) return startChat();
+      nameForm.classList.add("visible");
+    }
+    nameSubmit.onclick = () => {
+      const v = nameInput.value.trim();
+      if (!v) { showError("نام را وارد کنید."); return; }
+      userName = v;
       persist();
-      appendMessage("assistant", ai);
+      nameForm.classList.remove("visible");
+      startChat();
+    };
+    askName();
 
-    } catch (e) {
-      showError("خطا در ارتباط با سرور.");
-      console.error(e);
+    function startChat() {
+      const sid = localStorage.getItem("currentSessionId");
+      currentSession = sessions.find(s => s.id === sid);
+      if (!currentSession) {
+        currentSession = {
+          id: Date.now().toString(),
+          name: userName,
+          model: modelSel.value,
+          messages: []
+        };
+        sessions.push(currentSession);
+      }
+      modelSel.value = currentSession.model;
+      renderMessages();
+      persist();
+      document.querySelector('[data-show="chat"]').click();
     }
-  }
 
-  // چت جدید
-  newChatBtn.onclick = () => {
-    localStorage.removeItem("currentSessionId");
-    startChat();
-  };
-
-  // رندر جلسات
-  function renderSessions() {
-    sessionsList.innerHTML = "";
-    if (!sessions.length) {
-      sessionsList.textContent = "گفتگویی وجود ندارد.";
-      return;
+    function renderMessages() {
+      chatBox.innerHTML = "";
+      currentSession.messages.forEach(msg => {
+        appendMessage(msg.role, msg.content, false);
+      });
+      scrollToBottom();
     }
-    sessions.forEach(s => {
-      const row = document.createElement("div");
-      row.className = "session-row";
-      row.innerHTML = `
-        <span>${s.name} – ${s.id.slice(-6)}</span>
-        <div>
-          <button class="btn small resume" data-id="${s.id}">ادامه</button>
-          <button class="btn small del" data-id="${s.id}">حذف</button>
-        </div>`;
-      sessionsList.appendChild(row);
+
+    function appendMessage(sender, message, typing = false) {
+      const el = document.createElement("div");
+      el.className = "msg " + (sender === "user" ? "user" : "assistant");
+      chatBox.appendChild(el);
+
+      if (sender === "assistant" && typing) {
+        let idx = 0;
+        const timer = setInterval(() => {
+          el.textContent += message[idx++] || "";
+          scrollToBottom();
+          if (idx >= message.length) clearInterval(timer);
+        }, 20);
+      } else {
+        el.textContent = message;
+        scrollToBottom();
+      }
+    }
+
+    function scrollToBottom() {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    userInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
     });
-    sessionsList.querySelectorAll(".resume").forEach(b => {
-      b.onclick = () => {
-        localStorage.setItem("currentSessionId", b.dataset.id);
-        startChat();
-      };
-    });
-    sessionsList.querySelectorAll(".del").forEach(b => {
-      b.onclick = () => {
-        sessions = sessions.filter(s => s.id !== b.dataset.id);
+    sendBtn.onclick = sendMessage;
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) { showError("متن پیام نمی‌تواند خالی باشد."); return; }
+      if (!credits.unlimited && credits.remaining <= 0) {
+        showError("اعتبار شما به پایان رسیده."); return;
+      }
+      if (!credits.unlimited) credits.remaining--;
+      updateCredit();
+
+      currentSession.messages.push({ role: "user", content: text });
+      persist();
+      appendMessage("user", text, false);
+      userInput.value = "";
+
+      const payload = [
+        ...currentSession.messages,
+        { role: "system", content: `(کاربر: ${userName})` }
+      ];
+      callAPI(payload);
+    }
+
+    async function callAPI(msgs) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type":  "application/json",
+            "Authorization": `Bearer ${API_KEY}`
+          },
+          body: JSON.stringify({
+            model:    modelSel.value,
+            messages: msgs
+          })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        if (data.error) {
+          showError(`خطا: ${data.error.message}`); 
+          return;
+        }
+
+        const ai = data.choices[0].message.content;
+        currentSession.messages.push({ role: "assistant", content: ai });
         persist();
-        renderSessions();
-      };
-    });
-  }
+        appendMessage("assistant", ai, true);
 
-  // رندر تنظیمات
-  function renderSettings() {
-    settingsName.value = userName;
-    usedCodes.innerHTML = "";
-    credits.used.forEach(c => {
-      const li = document.createElement("li");
-      li.textContent = c + " ";
-      const btn = document.createElement("button");
-      btn.textContent = "❌"; btn.className = "small";
-      btn.onclick = () => {
-        credits.used = credits.used.filter(x => x !== c);
-        if (c === PROMO_UNLIM) credits.unlimited = false;
-        else if (PROMO_MULTI.includes(c)) credits.remaining -= 50;
-        updateCredit();
-        renderSettings();
-      };
-      li.appendChild(btn);
-      usedCodes.appendChild(li);
-    });
-  }
-
-  // ذخیره نام
-  saveNameBtn.onclick = () => {
-    const v = settingsName.value.trim();
-    if (!v) { showError("نام نمی‌تواند خالی باشد."); return; }
-    userName = v; persist(); showError("نام ذخیره شد.");
-  };
-
-  // اعمال کد تخفیف
-  redeemBtn.onclick = () => {
-    const code = promoInput.value.trim();
-    if (!code) { showError("کد را وارد کنید."); return; }
-    if (credits.used.includes(code)) {
-      showError("این کد قبلاً استفاده شده."); return;
+      } catch (e) {
+        console.error(e);
+        showError("خطا در ارتباط با سرور.");
+      }
     }
-    if (code === PROMO_UNLIM) credits.unlimited = true;
-    else if (PROMO_MULTI.includes(code)) credits.remaining += 50;
-    else { showError("کد نامعتبر است."); return; }
-    credits.used.push(code);
-    updateCredit(); renderSettings();
-    promoInput.value = "";
-    showError("کد با موفقیت اعمال شد.");
-  };
 
-  // حذف همه گفتگوها (اعتبار و نام باقی بماند)
-  clearAllBtn.onclick = () => {
-    if (!confirm("همهٔ گفتگوها پاک شود؟")) return;
-    localStorage.removeItem("sessions");
-    localStorage.removeItem("currentSessionId");
-    sessions = [];
-    currentSession = null;
-    document.querySelector('[data-show="chat"]').click();
-    renderMessages();
-  };
+    newChatBtn.onclick = () => {
+      localStorage.removeItem("currentSessionId");
+      startChat();
+    };
 
-})();
-</script>
+    function renderSessions() {
+      sessionsList.innerHTML = "";
+      if (!sessions.length) {
+        sessionsList.textContent = "گفتگویی وجود ندارد.";
+        return;
+      }
+      sessions.forEach(s => {
+        const row = document.createElement("div");
+        row.className = "session-row";
+        row.innerHTML = `
+          <span>${s.name} – ${s.id.slice(-6)}</span>
+          <div>
+            <button class="btn small resume" data-id="${s.id}">ادامه</button>
+            <button class="btn small del" data-id="${s.id}">حذف</button>
+          </div>`;
+        sessionsList.appendChild(row);
+      });
+      sessionsList.querySelectorAll(".resume").forEach(b => {
+        b.onclick = () => {
+          localStorage.setItem("currentSessionId", b.dataset.id);
+          startChat();
+        };
+      });
+      sessionsList.querySelectorAll(".del").forEach(b => {
+        b.onclick = () => {
+          sessions = sessions.filter(x => x.id !== b.dataset.id);
+          persist();
+          renderSessions();
+        };
+      });
+    }
 
+    function renderSettings() {
+      settingsName.value = userName;
+      usedCodes.innerHTML = "";
+      credits.used.forEach(code => {
+        const li = document.createElement("li");
+        li.textContent = code + " ";
+        const btn = document.createElement("button");
+        btn.textContent = "❌"; btn.className = "small";
+        btn.onclick = () => {
+          credits.used = credits.used.filter(x => x !== code);
+          if (code === PROMO_UNLIM) credits.unlimited = false;
+          else if (PROMO_MULTI.includes(code)) credits.remaining -= 50;
+          updateCredit();
+          renderSettings();
+        };
+        li.appendChild(btn);
+        usedCodes.appendChild(li);
+      });
+    }
+
+    saveNameBtn.onclick = () => {
+      const v = settingsName.value.trim();
+      if (!v) { showError("نام نمی‌تواند خالی باشد."); return; }
+      userName = v; persist(); showError("نام ذخیره شد.");
+    };
+
+    redeemBtn.onclick = () => {
+      const code = promoInput.value.trim();
+      if (!code) { showError("کد را وارد کنید."); return; }
+      if (credits.used.includes(code)) {
+        showError("این کد قبلاً استفاده شده."); return;
+      }
+      if (code === PROMO_UNLIM) credits.unlimited = true;
+      else if (PROMO_MULTI.includes(code)) credits.remaining += 50;
+      else { showError("کد نامعتبر است."); return; }
+      credits.used.push(code);
+      updateCredit();
+      renderSettings();
+      promoInput.value = "";
+      showError("کد با موفقیت اعمال شد.");
+    };
+
+    clearAllBtn.onclick = () => {
+      if (!confirm("همهٔ گفتگوها پاک شود؟")) return;
+      localStorage.removeItem("sessions");
+      localStorage.removeItem("currentSessionId");
+      sessions = [];
+      currentSession = null;
+      document.querySelector('[data-show="chat"]').click();
+      renderMessages();
+    };
+
+  })();
+  </script>
 </body>
 </html>
