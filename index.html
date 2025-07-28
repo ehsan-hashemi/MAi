@@ -42,6 +42,7 @@
         <select id="model-select">
           <option value="gpt-4o">gpt-4o</option>
           <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+          <option value="gemini-2.5-flash-lite"></option>
         </select>
       </label>
       <button id="new-chat">چت جدید</button>
@@ -84,7 +85,7 @@
     <a href="https://ehsan-hashemi.ir">ehsan-hashemi.ir</a>
     <br>
     <br>
-    <p>! به دلیل اتمام اعتبار سرور هوش مصنوعی، سرویس هوش مصنوعی غیرفعال شده است. !</p>
+    <p>! به دلیل اتمام اعتبار سرور هوش مصنوعی، سرویس هوش مصنوعی غیرفعال شده است !</p>
     <br>
     <p>با خرید کافه (دونیت) برای ما و حمایت از ما، این سرویس دوباره فعال میشود. همچنین پس از حمایت، ۱۰۰ اعتبار پیام به هوش مصنوعی رایگان دریافت می‌کنید.</p>
     <br>
@@ -93,6 +94,7 @@
        <img src="/lemonchiffon.png" style="width:260px; text-align: center;" />
       </a>
     </div>
+    <p>پس از خرید دونیت، جهت دریافت هدیه با شما ارتباط گرفته می‌شود.</p>
   </section>
 
   <footer class="footer">
@@ -104,15 +106,15 @@
 
   <script>
   (function(){
-    const API_URL      = "https://api.gapgpt.app/v1/chat/completions";
-    const API_KEY      = "sk-sxfmWsR7rb8P0IkSoQXUeKw6X52OqjIk2mdRWCDvYHgOzNOS";
+    const API_URL      = "https://api.avalapis.ir/v1/chat/completions";
+    const API_KEY      = "aa-ZA4Mny7chGqUoOoGibnpzbCZ54JewMoFoJDKzDhFGXTe1w24";
     const INITIAL_CRED = 10;
     const PROMO_MULTI  = ["wh5109sh","37ffjshg","8ehfy6w"];
     const PROMO_UNLIM  = "xallai21001";
 
     let sessions       = JSON.parse(localStorage.getItem("sessions") || "[]");
     let credits        = JSON.parse(localStorage.getItem("credits") ||
-                            JSON.stringify({ remaining: INITIAL_CRED, unlimited: false, used: [] }));
+                          JSON.stringify({ remaining: INITIAL_CRED, unlimited: false, used: [] }));
     let currentSession = null;
     let userName       = localStorage.getItem("userName") || "";
 
