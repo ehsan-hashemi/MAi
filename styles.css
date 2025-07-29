@@ -202,3 +202,7 @@ body {
   .logo-area, .user-credit { text-align: center; }
   .chat-header { flex-direction: column; }
 }
+
+.selectai {
+  background-color: white;
+}
