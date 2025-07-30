@@ -206,3 +206,23 @@ body {
 .selectai {
   background-color: white;
 }
+
+/* استایل برای بلوک‌های کد داخل پیام‌های هوش‌مصنوعی */
+.msg.assistant pre {
+  background-color: #1e1e1e;    /* زمینهٔ تیره */
+  color: #f8f8f2;               /* متن روشن */
+  padding: 12px;                /* فاصله داخل */
+  margin-top: 8px;              /* فاصله از متن بالایی */
+  border-radius: 4px;           /* گوشه‌های کمی منحنی */
+  overflow-x: auto;             /* اسکرول افقی در صورت طولانی بودن */
+  font-family: "Source Code Pro", monospace;
+  line-height: 1.5;
+}
+
+/* اگر از <code> درون پاراگراف هم استفاده می‌کنی */
+.msg.assistant code {
+  background-color: #333;
+  color: #f8f8f2;
+  padding: 2px 4px;
+  border-radius: 3px;
+}

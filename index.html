@@ -7,9 +7,6 @@
   <link rel="icon" href="/MAI.png"/>
   <link rel="stylesheet" href="styles.css"/>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <!-- Statsfa Website Analytics Start -->
-  <script data-host="https://statsfa.com" data-dnt="true" src="https://statsfa.com/js/script.js" id="ZwSg9rf6GA" async defer></script>
-  <!-- Statsfa Website Analytics End -->
 </head>
 <body>
 
@@ -39,16 +36,6 @@
   </header>
 
   <main id="chat" class="view">
-    <div class="chat-header">
-      <label>
-          مدل:
-          <select class="selectai" id="model-select">
-              <option value="gpt-4o">gpt-4o</option>
-              <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-          </select>
-      </label>
-      <button id="new-chat">چت جدید</button>
-    </div>
     <div id="chat-box" class="chat-box" tabindex="0"></div>
     <div class="input-row">
       <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
@@ -57,20 +44,30 @@
   </main>
 
   <section id="sessions" class="view hidden">
+   <div class="chat-header">
+      <label>
+        مدل:
+        <select id="model-select">
+          <option value="gpt-4o">gpt-4o</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+        </select>
+      </label>
+      <button id="new-chat">چت جدید</button>
+    </div> 
     <h3>گفتگوهای شما</h3>
+    <p>گفتگو های جدیدتر پایین تر هستند!</p>
     <div id="sessions-list"></div>
   </section>
 
   <section id="settings" class="view hidden">
     <h3>تنظیمات</h3>
-    <p style="color: red; text-align: center;">توجه! فعلا سرویس هوش مصنوعی غیرفعال می‌باشد. اگر پیام خطا در ارتباط با سرور را دریافت کردید، مجدد پیام ندهید. چون از اعتبار پیام شما کسر خواهد شد.</p>
     <div class="form-group">
       <label>نام کاربری</label>
       <input id="settings-name" type="text"/>
       <button id="save-name">ذخیره</button>
     </div>
     <div class="form-group">
-      <label>افزایش اعتبار / کد تخفیف</label>
+      <label>کد تخفیف / افزایش اعتبار</label>
       <input id="promo-input" placeholder="کد را وارد کنید"/>
       <button id="redeem-btn">اعمال</button>
     </div>
@@ -84,356 +81,358 @@
   <section id="Made" class="view hidden">
     <h3>سازنده</h3>
     <p>سازنده‌ی MAi گروه برنامه نویسی احسان است.</p>
-    <br>
     <a href="https://ehsan-hashemi.ir">ehsan-hashemi.ir</a>
-    <br>
-    <br>
-    <p>! به دلیل اتمام اعتبار سرور هوش مصنوعی، سرویس هوش مصنوعی غیرفعال شده است !</p>
-    <br>
-    <p>با خرید کافه (دونیت) برای ما و حمایت از ما، این سرویس دوباره فعال میشود. همچنین پس از حمایت، ۱۰۰ اعتبار پیام به هوش مصنوعی رایگان دریافت می‌کنید.</p>
-    <br>
-    <div style="text-align: center;">
-      <a href="http://www.coffeete.ir/Ehsan_Programming_Group" style="text-align: center;">
-       <img src="/lemonchiffon.png" style="width:260px; text-align: center;" />
+    <p>با حمایت از ما در بهبود کیفیت سایت کمک کنید.</p>
+    <div style="text-align:center;">
+      <a href="http://www.coffeete.ir/Ehsan_Programming_Group">
+        <img src="/lemonchiffon.png" style="width:260px;" />
       </a>
     </div>
-    <p>پس از خرید دونیت، جهت دریافت هدیه با شما ارتباط گرفته می‌شود.</p>
   </section>
 
   <footer class="footer">
-    <p style="direction: ltr">
-      &copy; <span id="year">2025</span> Enter Code - All rights reserved.
-      <a href="https://ehsan-hashemi.ir" target="_blank">Ehsan Group</a>
+    <p style="direction:ltr">
+      &copy; <span id="year"></span> Enter Code - All rights reserved.
     </p>
   </footer>
 
   <script>
-  (function(){
-  // CORS proxy برای عبور از محدودیت‌های مرورگر
-  const CORS_PROXY  = "https://thingproxy.freeboard.io/fetch/";
+  (function() {
+    const API_URL    = "https://api.gapgpt.app/v1/chat/completions";
+    const API_KEY    = "sk-LnlThjirqLPoBRBLWER6rLwcIqtfN9g8iPSYKkqIWaYvMuKq";
+    const INITIAL_C  = 8;
+    const PROMO_MULTI= ["wh5109sh","37ffjshg","8ehfy6w"];
+    const PROMO_UNLIM= "xallai21001";
+    const COPY_ICON  = "https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png";
 
-  // مسیر کامل endpoint چت
-  const API_URL      = "https://ai.liara.ir/api/v1/688796521be655cba9511c27/";
-  const API_KEY      = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODg3OTU4ZDY2MDZiNDJkM2NjOWE5ZWIiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc1Mzc4NzMxMn0.1YDI_0anvinKezrjpD8DreuGqKGzTKHFpYbM4sC86LM";
-  const INITIAL_CRED = 10;
-  const PROMO_MULTI  = ["wh5109sh","37ffjshg","8ehfy6w"];
-  const PROMO_UNLIM  = "xallai21001";
+    let sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+    let credits  = JSON.parse(localStorage.getItem("credits") || 
+                    JSON.stringify({ remaining: INITIAL_C, unlimited: false, used: [] }));
+    let currentSession, userName = localStorage.getItem("userName") || "";
+    let abortCtrl = null, isStreaming = false;
 
-  let sessions       = JSON.parse(localStorage.getItem("sessions") || "[]");
-  let credits        = JSON.parse(localStorage.getItem("credits") ||
-                          JSON.stringify({ remaining: INITIAL_CRED, unlimited: false, used: [] }));
-  let currentSession = null;
-  let userName       = localStorage.getItem("userName") || "";
+    const elems = {
+      nameForm:    document.getElementById("name-form"),
+      nameInput:   document.getElementById("name-input"),
+      nameSubmit:  document.getElementById("name-submit"),
+      tabs:        document.querySelectorAll(".tab-btn"),
+      views:       document.querySelectorAll(".view"),
+      creditDisp:  document.getElementById("credit-display"),
+      chatBox:     document.getElementById("chat-box"),
+      userInput:   document.getElementById("user-input"),
+      sendBtn:     document.getElementById("send-btn"),
+      modelSel:    document.getElementById("model-select"),
+      newChatBtn:  document.getElementById("new-chat"),
+      sessionsList:document.getElementById("sessions-list"),
+      settingsName:document.getElementById("settings-name"),
+      saveNameBtn: document.getElementById("save-name"),
+      promoInput:  document.getElementById("promo-input"),
+      redeemBtn:   document.getElementById("redeem-btn"),
+      usedCodes:   document.getElementById("used-codes"),
+      clearAllBtn: document.getElementById("clear-all"),
+      yearSpan:    document.getElementById("year")
+    };
 
-  const nameForm     = document.getElementById("name-form");
-  const nameInput    = document.getElementById("name-input");
-  const nameSubmit   = document.getElementById("name-submit");
-  const tabs         = document.querySelectorAll(".tab-btn");
-  const views        = document.querySelectorAll(".view");
-  const creditDisp   = document.getElementById("credit-display");
-  const chatBox      = document.getElementById("chat-box");
-  const userInput    = document.getElementById("user-input");
-  const sendBtn      = document.getElementById("send-btn");
-  const modelSel     = document.getElementById("model-select");
-  const newChatBtn   = document.getElementById("new-chat");
-  const sessionsList = document.getElementById("sessions-list");
-  const settingsName = document.getElementById("settings-name");
-  const saveNameBtn  = document.getElementById("save-name");
-  const promoInput   = document.getElementById("promo-input");
-  const redeemBtn    = document.getElementById("redeem-btn");
-  const usedCodes    = document.getElementById("used-codes");
-  const clearAllBtn  = document.getElementById("clear-all");
-  const yearSpan     = document.getElementById("year");
-  yearSpan.textContent = new Date().getFullYear();
+    elems.yearSpan.textContent = new Date().getFullYear();
 
-  // نمایش تب‌ها
-  tabs.forEach(btn => {
-    btn.onclick = () => {
-      document.querySelector(".tab-btn.active").classList.remove("active");
-      btn.classList.add("active");
-      views.forEach(v => {
-        v.id === btn.dataset.show
-          ? v.classList.remove("hidden")
-          : v.classList.add("hidden");
+    elems.tabs.forEach(btn=>{
+      btn.onclick=()=>{
+        document.querySelector(".tab-btn.active").classList.remove("active");
+        btn.classList.add("active");
+        elems.views.forEach(v=>{
+          v.id===btn.dataset.show? v.classList.remove("hidden") : v.classList.add("hidden");
+        });
+        if(btn.dataset.show==="sessions") renderSessions();
+        if(btn.dataset.show==="settings") renderSettings();
+      };
+    });
+
+    function persist() {
+      localStorage.setItem("sessions", JSON.stringify(sessions));
+      localStorage.setItem("credits", JSON.stringify(credits));
+      localStorage.setItem("userName", userName);
+      if(currentSession) localStorage.setItem("currentSessionId", currentSession.id);
+    }
+
+    function updateCredit() {
+      elems.creditDisp.textContent = credits.unlimited?"نامحدود":credits.remaining;
+      persist();
+    }
+
+    function scrollOnce() {
+      requestAnimationFrame(()=>{
+        elems.chatBox.scrollTop = elems.chatBox.scrollHeight;
       });
-      if (btn.dataset.show === "sessions") renderSessions();
-      if (btn.dataset.show === "settings") renderSettings();
-    };
-  });
-
-  function persist() {
-    localStorage.setItem("sessions", JSON.stringify(sessions));
-    localStorage.setItem("credits", JSON.stringify(credits));
-    localStorage.setItem("userName", userName);
-    if (currentSession) {
-      localStorage.setItem("currentSessionId", currentSession.id);
-    }
-  }
-
-  function updateCredit() {
-    creditDisp.textContent = credits.unlimited ? "نامحدود" : credits.remaining;
-    persist();
-  }
-  updateCredit();
-
-  function showError(msg) {
-    const el = document.createElement("div");
-    el.className = "msg assistant error";
-    el.textContent = msg;
-    chatBox.appendChild(el);
-    scrollToBottom();
-  }
-
-  function askName() {
-    if (userName) return startChat();
-    nameForm.classList.add("visible");
-  }
-  nameSubmit.onclick = () => {
-    const v = nameInput.value.trim();
-    if (!v) { showError("نام را وارد کنید."); return; }
-    userName = v;
-    persist();
-    nameForm.classList.remove("visible");
-    startChat();
-  };
-  askName();
-
-  function startChat() {
-    const sid = localStorage.getItem("currentSessionId");
-    currentSession = sessions.find(s => s.id === sid);
-    if (!currentSession) {
-      currentSession = {
-        id: Date.now().toString(),
-        name: userName,
-        model: modelSel.value,
-        messages: []
-      };
-      sessions.push(currentSession);
-    }
-    modelSel.value = currentSession.model;
-    renderMessages();
-    persist();
-    document.querySelector('[data-show="chat"]').click();
-  }
-
-  function renderMessages() {
-    chatBox.innerHTML = "";
-    currentSession.messages.forEach(msg => {
-      appendMessage(msg.role, msg.content, false);
-    });
-    scrollToBottom();
-  }
-
-  function appendMessage(sender, message, typing = false) {
-    const el = document.createElement("div");
-    el.className = "msg " + (sender === "user" ? "user" : "assistant");
-    chatBox.appendChild(el);
-
-    if (sender === "assistant" && typing) {
-      let idx = 0;
-      const timer = setInterval(() => {
-        el.textContent += message[idx++] || "";
-        scrollToBottom();
-        if (idx >= message.length) clearInterval(timer);
-      }, 20);
-    } else {
-      el.textContent = message;
-      scrollToBottom();
-    }
-  }
-
-  function scrollToBottom() {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  // ارسال با اینتر یا کلیک
-  userInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-  sendBtn.onclick = sendMessage;
-
-  //ــ تغییرات اصلی در این تابع:
-  function sendMessage() {
-    const text = userInput.value.trim();
-    if (!text) { showError("متن پیام نمی‌تواند خالی باشد."); return; }
-    if (!credits.unlimited && credits.remaining <= 0) {
-      showError("اعتبار شما به پایان رسیده."); return;
-    }
-    if (!credits.unlimited) credits.remaining--;
-    updateCredit();
-
-    currentSession.messages.push({ role: "user", content: text });
-    persist();
-    appendMessage("user", text, false);
-    userInput.value = "";
-
-    // پیام system همیشه اول payload
-    const systemMsg = {
-      role: "system",
-      content: `(کاربر: ${userName})`
-    };
-    const payload = [ systemMsg, ...currentSession.messages ];
-
-    // اضافه کردن پیشوند openai/ در مدل
-    const modelName = modelSel.value.startsWith("openai/")
-      ? modelSel.value
-      : `openai/${modelSel.value}`;
-
-    callAPI(payload, modelName);
-  }
-
-  //ــ به‌روزرسانی برای استفاده از پروکسی و نام مدل
-  function sendMessage() {
-  const text = userInput.value.trim();
-  if (!text) { showError("متن پیام نمی‌تواند خالی باشد."); return; }
-  if (!credits.unlimited && credits.remaining <= 0) {
-    showError("اعتبار شما به پایان رسیده."); return;
-  }
-  if (!credits.unlimited) credits.remaining--;
-  updateCredit();
-
-  // اضافه کردن پیام کاربر به جلسه
-  currentSession.messages.push({ role: "user", content: text });
-  persist();
-  appendMessage("user", text, false);
-  userInput.value = "";
-
-  // خلق payload با system message اول
-  const systemMsg = {
-    role: "system",
-    content: `(کاربر: ${userName})`
-  };
-  const payload = [ systemMsg, ...currentSession.messages ];
-
-  // اطمینان از پیشوند openai/ در مدل
-  const modelName = modelSel.value.startsWith("openai/")
-    ? modelSel.value
-    : `openai/${modelSel.value}`;
-
-  // کال کردن API با پروکسی
-  callAPI(payload, modelName);
-}
-
-// 3. آپدیت callAPI برای استفاده از CORS-proxy و مدل دریافتی:
-async function callAPI(msgs, modelName) {
-  try {
-    const res = await fetch(CORS_PROXY + API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type":  "application/json",
-        "Authorization": `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model:    modelName,
-        messages: msgs
-      })
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (data.error) {
-      showError(`خطا: ${data.error.message}`); 
-      return;
     }
 
-    const ai = data.choices[0].message.content;
-    currentSession.messages.push({ role: "assistant", content: ai });
-    persist();
-    appendMessage("assistant", ai, true);
-
-  } catch (e) {
-    console.error(e);
-    showError("خطا در ارتباط با سرور.");
-  }
-}
-
-  function renderSessions() {
-    sessionsList.innerHTML = "";
-    if (!sessions.length) {
-      sessionsList.textContent = "گفتگویی وجود ندارد.";
-      return;
+    function appendUser(text) {
+      const d = document.createElement("div");
+      d.className = "msg user"; d.textContent = text;
+      elems.chatBox.appendChild(d);
+      return d;
     }
-    sessions.forEach(s => {
-      const row = document.createElement("div");
-      row.className = "session-row";
-      row.innerHTML = `
-        <span>${s.name} – ${s.id.slice(-6)}</span>
-        <div>
-          <button class="btn small resume" data-id="${s.id}">ادامه</button>
-          <button class="btn small del" data-id="${s.id}">حذف</button>
-        </div>`;
-      sessionsList.appendChild(row);
-    });
-    sessionsList.querySelectorAll(".resume").forEach(b => {
-      b.onclick = () => {
-        localStorage.setItem("currentSessionId", b.dataset.id);
-        startChat();
-      };
-    });
-    sessionsList.querySelectorAll(".del").forEach(b => {
-      b.onclick = () => {
-        sessions = sessions.filter(x => x.id !== b.dataset.id);
+
+    function appendAssist(md="") {
+      const d = document.createElement("div");
+      d.className = "msg assistant";
+      elems.chatBox.appendChild(d);
+      return d;
+    }
+
+    function addCopyButtons(container) {
+      container.querySelectorAll("pre code").forEach(codeBlock=>{
+        const pre = codeBlock.parentElement;
+        const wrapper = document.createElement("div");
+        wrapper.style.position="relative";
+        pre.parentNode.replaceChild(wrapper, pre);
+        wrapper.appendChild(pre);
+        const btn = document.createElement("img");
+        btn.src = COPY_ICON;
+        btn.title="کپی کد";
+        btn.style.cssText="position:absolute;top:4px;left:4px;cursor:pointer;width:24px;";
+        btn.onclick = ()=> navigator.clipboard.writeText(codeBlock.textContent);
+        wrapper.appendChild(btn);
+      });
+    }
+
+    function showError(msg) {
+      const d = appendAssist();
+      d.textContent = msg;
+      scrollOnce();
+    }
+
+    function setStreaming(on) {
+      isStreaming = on;
+      elems.sendBtn.textContent = on?"■":"↑";
+      elems.sendBtn.onclick = on? ()=>abortCtrl?.abort() : sendMessage;
+    }
+
+    async function sendMessage() {
+      const txt = elems.userInput.value.trim();
+      if(!txt) return showError("متن پیام نمی‌تواند خالی باشد.");
+      if(!credits.unlimited && credits.remaining<1) return showError("اعتبار شما به پایان رسیده.");
+      if(!credits.unlimited) credits.remaining--;
+      updateCredit();
+
+      currentSession.messages.push({role:"user",content:txt});
+      persist();
+      appendUser(txt);
+      scrollOnce();
+      elems.userInput.value = "";
+
+      await callAPI();
+    }
+
+    async function callAPI() {
+      setStreaming(true);
+      abortCtrl = new AbortController();
+
+      // دو پیام system: یکی برای مدل، یکی برای نام کاربر
+      const modelIdentity = currentSession.model==="gpt-4o"
+        ? "شما مدل gpt-4o هستید."
+        : "شما مدل gemini-2.5-pro هستید.";
+      const sys1 = { role:"system", content:modelIdentity };
+      const sys2 = { role:"system", content:`(کاربر: ${userName})` };
+      const messages = [sys1, sys2, ...currentSession.messages];
+
+      let assistantText = "";
+      const assistEl = appendAssist();
+      scrollOnce();
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type":"application/json",
+            "Authorization":`Bearer ${API_KEY}`
+          },
+          body: JSON.stringify({
+            model: currentSession.model,
+            messages,
+            stream: true
+          }),
+          signal: abortCtrl.signal
+        });
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+
+        while(true) {
+          const {done,value} = await reader.read();
+          if(done) break;
+          const chunk = decoder.decode(value, {stream:true});
+          chunk.split("\n")
+            .filter(l=>l.startsWith("data:"))
+            .forEach(line=>{
+              const j = line.replace("data:","").trim();
+              if(j==="[DONE]") return;
+              try {
+                const p = JSON.parse(j);
+                const c = p.choices?.[0]?.delta?.content;
+                if(c) assistantText += c;
+              } catch{}
+            });
+          assistEl.innerHTML = marked.parse(assistantText);
+        }
+
+        currentSession.messages.push({ role:"assistant", content:assistantText });
         persist();
-        renderSessions();
-      };
-    });
-  }
+        addCopyButtons(assistEl);
 
-  function renderSettings() {
-    settingsName.value = userName;
-    usedCodes.innerHTML = "";
-    credits.used.forEach(code => {
-      const li = document.createElement("li");
-      li.textContent = code + " ";
-      const btn = document.createElement("button");
-      btn.textContent = "❌"; btn.className = "small";
-      btn.onclick = () => {
-        credits.used = credits.used.filter(x => x !== code);
-        if (code === PROMO_UNLIM) credits.unlimited = false;
-        else if (PROMO_MULTI.includes(code)) credits.remaining -= 50;
-        updateCredit();
-        renderSettings();
-      };
-      li.appendChild(btn);
-      usedCodes.appendChild(li);
-    });
-  }
-
-  saveNameBtn.onclick = () => {
-    const v = settingsName.value.trim();
-    if (!v) { showError("نام نمی‌تواند خالی باشد."); return; }
-    userName = v; persist(); showError("نام ذخیره شد.");
-  };
-
-  redeemBtn.onclick = () => {
-    const code = promoInput.value.trim();
-    if (!code) { showError("کد را وارد کنید."); return; }
-    if (credits.used.includes(code)) {
-      showError("این کد قبلاً استفاده شده."); return;
+      } catch(e) {
+        if(e.name!=="AbortError") showError("خطا در ارتباط با سرور.");
+      } finally {
+        setStreaming(false);
+        abortCtrl = null;
+        scrollOnce();
+      }
     }
-    if (code === PROMO_UNLIM) credits.unlimited = true;
-    else if (PROMO_MULTI.includes(code)) credits.remaining += 50;
-    else { showError("کد نامعتبر است."); return; }
-    credits.used.push(code);
-    updateCredit();
-    renderSettings();
-    promoInput.value = "";
-    showError("کد با موفقیت اعمال شد.");
-  };
 
-  clearAllBtn.onclick = () => {
-    if (!confirm("همهٔ گفتگوها پاک شود؟")) return;
-    localStorage.removeItem("sessions");
-    localStorage.removeItem("currentSessionId");
-    sessions = [];
-    currentSession = null;
-    document.querySelector('[data-show="chat"]').click();
-    renderMessages();
-  };
+    elems.modelSel.onchange = ()=>{
+      if(currentSession) {
+        currentSession.model = elems.modelSel.value;
+        persist();
+      }
+    };
 
-})();
+    elems.userInput.addEventListener("keydown", e=>{
+      if(e.key==="Enter" && !e.shiftKey && !isStreaming) {
+        e.preventDefault(); sendMessage();
+      }
+    });
+
+    function askName() {
+      if(userName) return startChat();
+      elems.nameForm.classList.add("visible");
+    }
+
+    elems.nameSubmit.onclick = ()=>{
+      const v = elems.nameInput.value.trim();
+      if(!v) return showError("نام را وارد کنید.");
+      userName = v; persist();
+      elems.nameForm.classList.remove("visible");
+      startChat();
+    };
+
+    function startChat() {
+      const sid = localStorage.getItem("currentSessionId");
+      currentSession = sessions.find(s=>s.id===sid) || null;
+      if(!currentSession) {
+        currentSession = {
+          id: Date.now().toString(),
+          name: userName,
+          model: elems.modelSel.value,
+          messages: []
+        };
+        sessions.push(currentSession);
+      }
+      elems.modelSel.value = currentSession.model;
+      renderMessages();
+      persist();
+      document.querySelector('[data-show="chat"]').click();
+    }
+
+    function renderMessages() {
+      elems.chatBox.innerHTML = "";
+      currentSession.messages.forEach(m=>{
+        if(m.role==="user") appendUser(m.content);
+        else {
+          const el = appendAssist();
+          el.innerHTML = marked.parse(m.content);
+          addCopyButtons(el);
+        }
+      });
+      scrollOnce();
+    }
+
+    elems.newChatBtn.onclick = ()=>{
+      localStorage.removeItem("currentSessionId");
+      startChat();
+    };
+
+    function renderSessions() {
+      elems.sessionsList.innerHTML = "";
+      if(!sessions.length) {
+        elems.sessionsList.textContent = "گفتگویی وجود ندارد.";
+        return;
+      }
+      sessions.forEach(s=>{
+        const row = document.createElement("div");
+        row.className="session-row";
+        row.innerHTML=`
+          <span>${s.name} – ${s.id.slice(-6)}</span>
+          <div>
+            <button class="btn small resume" data-id="${s.id}">ادامه</button>
+            <button class="btn small del"    data-id="${s.id}">حذف</button>
+          </div>`;
+        elems.sessionsList.appendChild(row);
+      });
+      elems.sessionsList.querySelectorAll(".resume").forEach(btn=>{
+        btn.onclick=()=>{
+          localStorage.setItem("currentSessionId", btn.dataset.id);
+          startChat();
+        };
+      });
+      elems.sessionsList.querySelectorAll(".del").forEach(btn=>{
+        btn.onclick=()=>{
+          sessions=sessions.filter(s=>s.id!==btn.dataset.id);
+          persist();
+          renderSessions();
+        };
+      });
+    }
+
+    function renderSettings() {
+      elems.settingsName.value = userName;
+      elems.usedCodes.innerHTML = "";
+      credits.used.forEach(code=>{
+        const li = document.createElement("li");
+        li.textContent = code+" ";
+        const b = document.createElement("button");
+        b.textContent="❌"; b.className="small";
+        b.onclick=()=>{
+          credits.used=credits.used.filter(c=>c!==code);
+          if(code===PROMO_UNLIM) credits.unlimited=false;
+          else if(PROMO_MULTI.includes(code)) credits.remaining-=50;
+          updateCredit(); renderSettings();
+        };
+        li.appendChild(b);
+        elems.usedCodes.appendChild(li);
+      });
+    }
+
+    elems.saveNameBtn.onclick=()=>{
+      const v=elems.settingsName.value.trim();
+      if(!v) return showError("نام نمی‌تواند خالی باشد.");
+      userName=v; persist(); showError("نام ذخیره شد.");
+    };
+
+    elems.redeemBtn.onclick=()=>{
+      const c=elems.promoInput.value.trim();
+      if(!c) return showError("کد را وارد کنید.");
+      if(credits.used.includes(c)) return showError("این کد قبلاً استفاده شده.");
+      if(c===PROMO_UNLIM) credits.unlimited=true;
+      else if(PROMO_MULTI.includes(c)) credits.remaining+=50;
+      else return showError("کد نامعتبر است.");
+      credits.used.push(c); updateCredit(); renderSettings();
+      elems.promoInput.value=""; showError("کد با موفقیت اعمال شد.");
+    };
+
+    elems.clearAllBtn.onclick=()=>{
+      if(!confirm("همهٔ گفتگوها پاک شود؟")) return;
+      localStorage.removeItem("sessions"); localStorage.removeItem("currentSessionId");
+      sessions=[]; currentSession=null;
+      document.querySelector('[data-show="chat"]').click();
+      elems.chatBox.innerHTML="";
+    };
+
+    function init() {
+      updateCredit();
+      askName();
+    }
+    init();
+  })();
   </script>
 </body>
 </html>
