@@ -41,7 +41,7 @@
     <div id="chat-box" class="chat-box" tabindex="0"></div>
     <div class="input-row">
       <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
-      <button id="send-btn">↑</button>
+      <button id="send-btn" onclick="sendMessage()">↑</button>
     </div>
   </main>
 
@@ -101,335 +101,384 @@
   </footer>
 
   <script>
-  (function() {
-    const API_URL    = "https://api.gapgpt.app/v1/chat/completions";
-    const API_KEY    = "sk-XVUuKiSZQMmkutogcsjjLFcKpwL6lbo0X2Gr77mNwSzjTZhJ";
-    const INITIAL_C  = 8;
-    const PROMO_MULTI= ["wh5109sh","37ffjshg","8ehfy6w"];
-    const PROMO_UNLIM= "xallai21001";
-    const COPY_ICON  = "https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png";
+(function() {
+  const API_URL     = "https://api.gapgpt.app/v1/chat/completions";
+  const API_KEY     = "sk-XVUuKiSZQMmkutogcsjjLFcKpwL6lbo0X2Gr77mNwSzjTZhJ";
+  const INITIAL_C   = 8;
+  const PROMO_MULTI = ["wh5109sh", "37ffjshg", "8ehfy6w"];
+  const PROMO_UNLIM = "xallai21001";
+  const COPY_ICON   = "https://dbkhatam.ir/jss/content_copy_24dp_000000_FILL0_wght400_GRAD0_opsz24.png";
 
-    let sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
-    let credits  = JSON.parse(localStorage.getItem("credits") || 
-                    JSON.stringify({ remaining: INITIAL_C, unlimited: false, used: [] }));
-    let currentSession, userName = localStorage.getItem("userName") || "";
-    let abortCtrl = null, isStreaming = false;
+  let sessions = JSON.parse(localStorage.getItem("sessions") || "[]");
+  let credits  = JSON.parse(localStorage.getItem("credits") ||
+                  JSON.stringify({ remaining: INITIAL_C, unlimited: false, used: [] }));
+  let currentSession, userName = localStorage.getItem("userName") || "";
+  let abortCtrl = null, isStreaming = false;
 
-    const elems = {
-      nameForm:    document.getElementById("name-form"),
-      nameInput:   document.getElementById("name-input"),
-      nameSubmit:  document.getElementById("name-submit"),
-      tabs:        document.querySelectorAll(".tab-btn"),
-      views:       document.querySelectorAll(".view"),
-      creditDisp:  document.getElementById("credit-display"),
-      chatBox:     document.getElementById("chat-box"),
-      userInput:   document.getElementById("user-input"),
-      sendBtn:     document.getElementById("send-btn"),
-      modelSel:    document.getElementById("model-select"),
-      newChatBtn:  document.getElementById("new-chat"),
-      sessionsList:document.getElementById("sessions-list"),
-      settingsName:document.getElementById("settings-name"),
-      saveNameBtn: document.getElementById("save-name"),
-      promoInput:  document.getElementById("promo-input"),
-      redeemBtn:   document.getElementById("redeem-btn"),
-      usedCodes:   document.getElementById("used-codes"),
-      clearAllBtn: document.getElementById("clear-all"),
-      yearSpan:    document.getElementById("year")
+  const elems = {
+    nameForm:     document.getElementById("name-form"),
+    nameInput:    document.getElementById("name-input"),
+    nameSubmit:   document.getElementById("name-submit"),
+    tabs:         document.querySelectorAll(".tab-btn"),
+    views:        document.querySelectorAll(".view"),
+    creditDisp:   document.getElementById("credit-display"),
+    chatBox:      document.getElementById("chat-box"),
+    userInput:    document.getElementById("user-input"),
+    sendBtn:      document.getElementById("send-btn"),
+    modelSel:     document.getElementById("model-select"),
+    newChatBtn:   document.getElementById("new-chat"),
+    sessionsList: document.getElementById("sessions-list"),
+    settingsName: document.getElementById("settings-name"),
+    saveNameBtn:  document.getElementById("save-name"),
+    promoInput:   document.getElementById("promo-input"),
+    redeemBtn:    document.getElementById("redeem-btn"),
+    usedCodes:    document.getElementById("used-codes"),
+    clearAllBtn:  document.getElementById("clear-all"),
+    yearSpan:     document.getElementById("year")
+  };
+
+  // ————— افزودن هوشمندی رفتار Enter در دسکتاپ/موبایل —————
+
+  // تشخیص موبایل
+  function isMobile() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  // هندلر keydown برای textarea
+  function handleKey(event) {
+    if (event.key === 'Enter') {
+      if (isMobile()) {
+        // موبایل: همیشه خط جدید
+        return;
+      } else {
+        // دسکتاپ: Shift+Enter سطر جدید، Enter ساده ارسال
+        if (event.shiftKey) {
+          return;
+        } else {
+          event.preventDefault();
+          sendMessage();
+        }
+      }
+    }
+  }
+
+  // متصل کردن هندلر
+  elems.userInput.addEventListener('keydown', handleKey);
+
+  // ——————————————————————————————————————————————
+
+  elems.yearSpan.textContent = new Date().getFullYear();
+
+  elems.tabs.forEach(btn => {
+    btn.onclick = () => {
+      document.querySelector(".tab-btn.active").classList.remove("active");
+      btn.classList.add("active");
+      elems.views.forEach(v => {
+        v.id === btn.dataset.show
+          ? v.classList.remove("hidden")
+          : v.classList.add("hidden");
+      });
+      if (btn.dataset.show === "sessions") renderSessions();
+      if (btn.dataset.show === "settings") renderSettings();
     };
+  });
 
-    elems.yearSpan.textContent = new Date().getFullYear();
+  function persist() {
+    localStorage.setItem("sessions", JSON.stringify(sessions));
+    localStorage.setItem("credits", JSON.stringify(credits));
+    localStorage.setItem("userName", userName);
+    if (currentSession) {
+      localStorage.setItem("currentSessionId", currentSession.id);
+    }
+  }
 
-    elems.tabs.forEach(btn=>{
-      btn.onclick=()=>{
-        document.querySelector(".tab-btn.active").classList.remove("active");
-        btn.classList.add("active");
-        elems.views.forEach(v=>{
-          v.id===btn.dataset.show? v.classList.remove("hidden") : v.classList.add("hidden");
-        });
-        if(btn.dataset.show==="sessions") renderSessions();
-        if(btn.dataset.show==="settings") renderSettings();
+  function updateCredit() {
+    elems.creditDisp.textContent = credits.unlimited ? "نامحدود" : credits.remaining;
+    persist();
+  }
+
+  function scrollOnce() {
+    requestAnimationFrame(() => {
+      elems.chatBox.scrollTop = elems.chatBox.scrollHeight;
+    });
+  }
+
+  function appendUser(text) {
+    const d = document.createElement("div");
+    d.className = "msg user";
+    d.textContent = text;
+    elems.chatBox.appendChild(d);
+    return d;
+  }
+
+  function appendAssist() {
+    const d = document.createElement("div");
+    d.className = "msg assistant";
+    elems.chatBox.appendChild(d);
+    return d;
+  }
+
+  function addCopyButtons(container) {
+    container.querySelectorAll("pre code").forEach(codeBlock => {
+      const pre = codeBlock.parentElement;
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+      pre.parentNode.replaceChild(wrapper, pre);
+      wrapper.appendChild(pre);
+      const btn = document.createElement("img");
+      btn.src = COPY_ICON;
+      btn.title = "کپی کد";
+      btn.style.cssText = "position:absolute;top:4px;left:4px;cursor:pointer;width:24px;";
+      btn.onclick = () => navigator.clipboard.writeText(codeBlock.textContent);
+      wrapper.appendChild(btn);
+    });
+  }
+
+  function showError(msg) {
+    const d = appendAssist();
+    d.textContent = msg;
+    scrollOnce();
+  }
+
+  function setStreaming(on) {
+    isStreaming = on;
+    elems.sendBtn.textContent = on ? "■" : "↑";
+    elems.sendBtn.onclick = on ? () => abortCtrl?.abort() : sendMessage;
+  }
+
+  async function sendMessage() {
+    const txt = elems.userInput.value.trim();
+    if (!txt) return showError("متن پیام نمی‌تواند خالی باشد.");
+    if (!credits.unlimited && credits.remaining < 1)
+      return showError("اعتبار شما به پایان رسیده.");
+    if (!credits.unlimited) credits.remaining--;
+    updateCredit();
+
+    currentSession.messages.push({ role: "user", content: txt });
+    persist();
+    appendUser(txt);
+    scrollOnce();
+    elems.userInput.value = "";
+
+    await callAPI();
+  }
+
+  async function callAPI() {
+    setStreaming(true);
+    abortCtrl = new AbortController();
+
+    const modelIdentity = currentSession.model === "gpt-4o"
+      ? "شما مدل gpt-4o هستید."
+      : "شما مدل gemini-2.5-pro هستید.";
+    const sys1 = { role: "system", content: modelIdentity };
+    const sys2 = { role: "system", content: `(کاربر: ${userName})` };
+    const messages = [sys1, sys2, ...currentSession.messages];
+
+    let assistantText = "";
+    const assistEl = appendAssist();
+    scrollOnce();
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: currentSession.model,
+          messages,
+          stream: true
+        }),
+        signal: abortCtrl.signal
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const reader  = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        chunk.split("\n")
+          .filter(l => l.startsWith("data:"))
+          .forEach(line => {
+            const j = line.replace("data:", "").trim();
+            if (j === "[DONE]") return;
+            try {
+              const p = JSON.parse(j);
+              const c = p.choices?.[0]?.delta?.content;
+              if (c) assistantText += c;
+            } catch {}
+          });
+        assistEl.innerHTML = marked.parse(assistantText);
+      }
+
+      currentSession.messages.push({ role: "assistant", content: assistantText });
+      persist();
+      addCopyButtons(assistEl);
+
+    } catch (e) {
+      if (e.name !== "AbortError") showError("خطا در ارتباط با سرور.");
+    } finally {
+      setStreaming(false);
+      abortCtrl = null;
+      scrollOnce();
+    }
+  }
+
+  elems.modelSel.onchange = () => {
+    if (currentSession) {
+      currentSession.model = elems.modelSel.value;
+      persist();
+    }
+  };
+
+  function askName() {
+    if (userName) return startChat();
+    elems.nameForm.classList.add("visible");
+  }
+
+  elems.nameSubmit.onclick = () => {
+    const v = elems.nameInput.value.trim();
+    if (!v) return showError("نام را وارد کنید.");
+    userName = v;
+    persist();
+    elems.nameForm.classList.remove("visible");
+    startChat();
+  };
+
+  function startChat() {
+    const sid = localStorage.getItem("currentSessionId");
+    currentSession = sessions.find(s => s.id === sid) || null;
+    if (!currentSession) {
+      currentSession = {
+        id: Date.now().toString(),
+        name: userName,
+        model: elems.modelSel.value,
+        messages: []
+      };
+      sessions.push(currentSession);
+    }
+    elems.modelSel.value = currentSession.model;
+    renderMessages();
+    persist();
+    document.querySelector('[data-show="chat"]').click();
+  }
+
+  function renderMessages() {
+    elems.chatBox.innerHTML = "";
+    currentSession.messages.forEach(m => {
+      if (m.role === "user") {
+        appendUser(m.content);
+      } else {
+        const el = appendAssist();
+        el.innerHTML = marked.parse(m.content);
+        addCopyButtons(el);
+      }
+    });
+    scrollOnce();
+  }
+
+  elems.newChatBtn.onclick = () => {
+    localStorage.removeItem("currentSessionId");
+    startChat();
+  };
+
+  function renderSessions() {
+    elems.sessionsList.innerHTML = "";
+    if (!sessions.length) {
+      elems.sessionsList.textContent = "گفتگویی وجود ندارد.";
+      return;
+    }
+    sessions.forEach(s => {
+      const row = document.createElement("div");
+      row.className = "session-row";
+      row.innerHTML = `
+        <span>${s.name} – ${s.id.slice(-6)}</span>
+        <div>
+          <button class="btn small resume" data-id="${s.id}">ادامه</button>
+          <button class="btn small del"    data-id="${s.id}">حذف</button>
+        </div>`;
+      elems.sessionsList.appendChild(row);
+    });
+    elems.sessionsList.querySelectorAll(".resume").forEach(btn => {
+      btn.onclick = () => {
+        localStorage.setItem("currentSessionId", btn.dataset.id);
+        startChat();
       };
     });
-
-    function persist() {
-      localStorage.setItem("sessions", JSON.stringify(sessions));
-      localStorage.setItem("credits", JSON.stringify(credits));
-      localStorage.setItem("userName", userName);
-      if(currentSession) localStorage.setItem("currentSessionId", currentSession.id);
-    }
-
-    function updateCredit() {
-      elems.creditDisp.textContent = credits.unlimited?"نامحدود":credits.remaining;
-      persist();
-    }
-
-    function scrollOnce() {
-      requestAnimationFrame(()=>{
-        elems.chatBox.scrollTop = elems.chatBox.scrollHeight;
-      });
-    }
-
-    function appendUser(text) {
-      const d = document.createElement("div");
-      d.className = "msg user"; d.textContent = text;
-      elems.chatBox.appendChild(d);
-      return d;
-    }
-
-    function appendAssist(md="") {
-      const d = document.createElement("div");
-      d.className = "msg assistant";
-      elems.chatBox.appendChild(d);
-      return d;
-    }
-
-    function addCopyButtons(container) {
-      container.querySelectorAll("pre code").forEach(codeBlock=>{
-        const pre = codeBlock.parentElement;
-        const wrapper = document.createElement("div");
-        wrapper.style.position="relative";
-        pre.parentNode.replaceChild(wrapper, pre);
-        wrapper.appendChild(pre);
-        const btn = document.createElement("img");
-        btn.src = COPY_ICON;
-        btn.title="کپی کد";
-        btn.style.cssText="position:absolute;top:4px;left:4px;cursor:pointer;width:24px;";
-        btn.onclick = ()=> navigator.clipboard.writeText(codeBlock.textContent);
-        wrapper.appendChild(btn);
-      });
-    }
-
-    function showError(msg) {
-      const d = appendAssist();
-      d.textContent = msg;
-      scrollOnce();
-    }
-
-    function setStreaming(on) {
-      isStreaming = on;
-      elems.sendBtn.textContent = on?"■":"↑";
-      elems.sendBtn.onclick = on? ()=>abortCtrl?.abort() : sendMessage;
-    }
-
-    async function sendMessage() {
-      const txt = elems.userInput.value.trim();
-      if(!txt) return showError("متن پیام نمی‌تواند خالی باشد.");
-      if(!credits.unlimited && credits.remaining<1) return showError("اعتبار شما به پایان رسیده.");
-      if(!credits.unlimited) credits.remaining--;
-      updateCredit();
-
-      currentSession.messages.push({role:"user",content:txt});
-      persist();
-      appendUser(txt);
-      scrollOnce();
-      elems.userInput.value = "";
-
-      await callAPI();
-    }
-
-    async function callAPI() {
-      setStreaming(true);
-      abortCtrl = new AbortController();
-
-      // دو پیام system: یکی برای مدل، یکی برای نام کاربر
-      const modelIdentity = currentSession.model==="gpt-4o"
-        ? "شما مدل gpt-4o هستید."
-        : "شما مدل gemini-2.5-pro هستید.";
-      const sys1 = { role:"system", content:modelIdentity };
-      const sys2 = { role:"system", content:`(کاربر: ${userName})` };
-      const messages = [sys1, sys2, ...currentSession.messages];
-
-      let assistantText = "";
-      const assistEl = appendAssist();
-      scrollOnce();
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type":"application/json",
-            "Authorization":`Bearer ${API_KEY}`
-          },
-          body: JSON.stringify({
-            model: currentSession.model,
-            messages,
-            stream: true
-          }),
-          signal: abortCtrl.signal
-        });
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-
-        while(true) {
-          const {done,value} = await reader.read();
-          if(done) break;
-          const chunk = decoder.decode(value, {stream:true});
-          chunk.split("\n")
-            .filter(l=>l.startsWith("data:"))
-            .forEach(line=>{
-              const j = line.replace("data:","").trim();
-              if(j==="[DONE]") return;
-              try {
-                const p = JSON.parse(j);
-                const c = p.choices?.[0]?.delta?.content;
-                if(c) assistantText += c;
-              } catch{}
-            });
-          assistEl.innerHTML = marked.parse(assistantText);
-        }
-
-        currentSession.messages.push({ role:"assistant", content:assistantText });
+    elems.sessionsList.querySelectorAll(".del").forEach(btn => {
+      btn.onclick = () => {
+        sessions = sessions.filter(s => s.id !== btn.dataset.id);
         persist();
-        addCopyButtons(assistEl);
+        renderSessions();
+      };
+    });
+  }
 
-      } catch(e) {
-        if(e.name!=="AbortError") showError("خطا در ارتباط با سرور.");
-      } finally {
-        setStreaming(false);
-        abortCtrl = null;
-        scrollOnce();
-      }
-    }
+  function renderSettings() {
+    elems.settingsName.value = userName;
+    elems.usedCodes.innerHTML = "";
+    credits.used.forEach(code => {
+      const li = document.createElement("li");
+      li.textContent = code + " ";
+      const b = document.createElement("button");
+      b.textContent = "❌";
+      b.className = "small";
+      b.onclick = () => {
+        credits.used = credits.used.filter(c => c !== code);
+        if (code === PROMO_UNLIM) credits.unlimited = false;
+        else if (PROMO_MULTI.includes(code)) credits.remaining -= 50;
+        updateCredit();
+        renderSettings();
+      };
+      li.appendChild(b);
+      elems.usedCodes.appendChild(li);
+    });
+  }
 
-    elems.modelSel.onchange = ()=>{
-      if(currentSession) {
-        currentSession.model = elems.modelSel.value;
-        persist();
-      }
-    };
+  elems.saveNameBtn.onclick = () => {
+    const v = elems.settingsName.value.trim();
+    if (!v) return showError("نام نمی‌تواند خالی باشد.");
+    userName = v;
+    persist();
+    showError("نام ذخیره شد.");
+  };
 
-    function askName() {
-      if(userName) return startChat();
-      elems.nameForm.classList.add("visible");
-    }
+  elems.redeemBtn.onclick = () => {
+    const c = elems.promoInput.value.trim();
+    if (!c) return showError("کد را وارد کنید.");
+    if (credits.used.includes(c)) return showError("این کد قبلاً استفاده شده.");
+    if (c === PROMO_UNLIM) credits.unlimited = true;
+    else if (PROMO_MULTI.includes(c)) credits.remaining += 50;
+    else return showError("کد نامعتبر است.");
+    credits.used.push(c);
+    updateCredit();
+    renderSettings();
+    elems.promoInput.value = "";
+    showError("کد با موفقیت اعمال شد.");
+  };
 
-    elems.nameSubmit.onclick = ()=>{
-      const v = elems.nameInput.value.trim();
-      if(!v) return showError("نام را وارد کنید.");
-      userName = v; persist();
-      elems.nameForm.classList.remove("visible");
-      startChat();
-    };
+  elems.clearAllBtn.onclick = () => {
+    if (!confirm("همهٔ گفتگوها پاک شود؟")) return;
+    localStorage.removeItem("sessions");
+    localStorage.removeItem("currentSessionId");
+    sessions = [];
+    currentSession = null;
+    document.querySelector('[data-show="chat"]').click();
+    elems.chatBox.innerHTML = "";
+  };
 
-    function startChat() {
-      const sid = localStorage.getItem("currentSessionId");
-      currentSession = sessions.find(s=>s.id===sid) || null;
-      if(!currentSession) {
-        currentSession = {
-          id: Date.now().toString(),
-          name: userName,
-          model: elems.modelSel.value,
-          messages: []
-        };
-        sessions.push(currentSession);
-      }
-      elems.modelSel.value = currentSession.model;
-      renderMessages();
-      persist();
-      document.querySelector('[data-show="chat"]').click();
-    }
+  function init() {
+    updateCredit();
+    askName();
+  }
 
-    function renderMessages() {
-      elems.chatBox.innerHTML = "";
-      currentSession.messages.forEach(m=>{
-        if(m.role==="user") appendUser(m.content);
-        else {
-          const el = appendAssist();
-          el.innerHTML = marked.parse(m.content);
-          addCopyButtons(el);
-        }
-      });
-      scrollOnce();
-    }
-
-    elems.newChatBtn.onclick = ()=>{
-      localStorage.removeItem("currentSessionId");
-      startChat();
-    };
-
-    function renderSessions() {
-      elems.sessionsList.innerHTML = "";
-      if(!sessions.length) {
-        elems.sessionsList.textContent = "گفتگویی وجود ندارد.";
-        return;
-      }
-      sessions.forEach(s=>{
-        const row = document.createElement("div");
-        row.className="session-row";
-        row.innerHTML=`
-          <span>${s.name} – ${s.id.slice(-6)}</span>
-          <div>
-            <button class="btn small resume" data-id="${s.id}">ادامه</button>
-            <button class="btn small del"    data-id="${s.id}">حذف</button>
-          </div>`;
-        elems.sessionsList.appendChild(row);
-      });
-      elems.sessionsList.querySelectorAll(".resume").forEach(btn=>{
-        btn.onclick=()=>{
-          localStorage.setItem("currentSessionId", btn.dataset.id);
-          startChat();
-        };
-      });
-      elems.sessionsList.querySelectorAll(".del").forEach(btn=>{
-        btn.onclick=()=>{
-          sessions=sessions.filter(s=>s.id!==btn.dataset.id);
-          persist();
-          renderSessions();
-        };
-      });
-    }
-
-    function renderSettings() {
-      elems.settingsName.value = userName;
-      elems.usedCodes.innerHTML = "";
-      credits.used.forEach(code=>{
-        const li = document.createElement("li");
-        li.textContent = code+" ";
-        const b = document.createElement("button");
-        b.textContent="❌"; b.className="small";
-        b.onclick=()=>{
-          credits.used=credits.used.filter(c=>c!==code);
-          if(code===PROMO_UNLIM) credits.unlimited=false;
-          else if(PROMO_MULTI.includes(code)) credits.remaining-=50;
-          updateCredit(); renderSettings();
-        };
-        li.appendChild(b);
-        elems.usedCodes.appendChild(li);
-      });
-    }
-
-    elems.saveNameBtn.onclick=()=>{
-      const v=elems.settingsName.value.trim();
-      if(!v) return showError("نام نمی‌تواند خالی باشد.");
-      userName=v; persist(); showError("نام ذخیره شد.");
-    };
-
-    elems.redeemBtn.onclick=()=>{
-      const c=elems.promoInput.value.trim();
-      if(!c) return showError("کد را وارد کنید.");
-      if(credits.used.includes(c)) return showError("این کد قبلاً استفاده شده.");
-      if(c===PROMO_UNLIM) credits.unlimited=true;
-      else if(PROMO_MULTI.includes(c)) credits.remaining+=50;
-      else return showError("کد نامعتبر است.");
-      credits.used.push(c); updateCredit(); renderSettings();
-      elems.promoInput.value=""; showError("کد با موفقیت اعمال شد.");
-    };
-
-    elems.clearAllBtn.onclick=()=>{
-      if(!confirm("همهٔ گفتگوها پاک شود؟")) return;
-      localStorage.removeItem("sessions"); localStorage.removeItem("currentSessionId");
-      sessions=[]; currentSession=null;
-      document.querySelector('[data-show="chat"]').click();
-      elems.chatBox.innerHTML="";
-    };
-
-    function init() {
-      updateCredit();
-      askName();
-    }
-    init();
+  init();
+})();
+</script>
   })();
   </script>
 </body>
