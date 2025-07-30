@@ -39,7 +39,15 @@
     <p>چک کنید حتما با https وارد شده باشید.</p>
     <div id="chat-box" class="chat-box" tabindex="0"></div>
     <div class="input-row">
-      <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
+      <textarea id="user-input" placeholder="پیام خود را بنویسید…"
+      onkeydown="
+      if (event.key === 'Enter') {
+        if (event.shiftKey) return;  // اجازه بده خط جدید ایجاد بشه
+        event.preventDefault();      // جلوگیری از رفتن به خط بعد
+        sendMessage();               // ارسال پیام
+      }
+      "
+      ></textarea>
       <button id="send-btn">↑</button>
     </div>
   </main>
