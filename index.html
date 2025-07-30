@@ -39,9 +39,7 @@
     <p>چک کنید حتما با https وارد شده باشید.</p>
     <div id="chat-box" class="chat-box" tabindex="0"></div>
     <div class="input-row">
-      <textarea id="user-input" placeholder="پیام خود را بنویسید…"
-      onkeydown=" if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); } "
-      ></textarea>
+      <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
       <button id="send-btn">↑</button>
     </div>
   </main>
@@ -97,7 +95,7 @@
 
   <footer class="footer">
     <p style="direction:ltr">
-      &copy; <span id="year"></span> MAi - All rights reserved.
+      &copy; <span id="year"></span> Enter Code - All rights reserved.
     </p>
   </footer>
 
@@ -306,6 +304,12 @@
         persist();
       }
     };
+
+    elems.userInput.addEventListener("keydown", e=>{
+      if(e.key==="Enter" && !e.shiftKey && !isStreaming) {
+        e.preventDefault(); sendMessage();
+      }
+    });
 
     function askName() {
       if(userName) return startChat();
