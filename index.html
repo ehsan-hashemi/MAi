@@ -36,6 +36,7 @@
   </header>
 
   <main id="chat" class="view">
+    <p>چک کنید حتما با https وارد شده باشید.</p>
     <div id="chat-box" class="chat-box" tabindex="0"></div>
     <div class="input-row">
       <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
@@ -51,6 +52,7 @@
           <option value="gpt-4o">gpt-4o</option>
           <option value="gemini-2.5-pro">gemini-2.5-pro</option>
           <option value="deepseek-chat">deepseek-chat</option>
+          <option value="grok-4">grok-4</option>
         </select>
       </label>
       <button id="new-chat">چت جدید</button>
@@ -101,6 +103,12 @@
   (function() {
     const API_URL    = "https://api.gapgpt.app/v1/chat/completions";
     const API_KEY    = "sk-XVUuKiSZQMmkutogcsjjLFcKpwL6lbo0X2Gr77mNwSzjTZhJ";
+    const availableModels = [
+      "gpt-4o",
+      "gemini-2.5-pro",
+      "deepseek-chat",
+      "grok-4"
+    ];
     const INITIAL_C  = 8;
     const PROMO_MULTI= ["wh5109sh","37ffjshg","8ehfy6w"];
     const PROMO_UNLIM= "xallai21001";
