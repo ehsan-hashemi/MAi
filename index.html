@@ -36,7 +36,6 @@
   </header>
 
   <main id="chat" class="view">
-    <p>چک کنید حتما با https وارد شده باشید.</p>
     <div id="chat-box" class="chat-box" tabindex="0"></div>
     <div class="input-row">
       <textarea id="user-input" placeholder="پیام خود را بنویسید…"></textarea>
@@ -103,12 +102,6 @@
   (function() {
     const API_URL    = "https://api.gapgpt.app/v1/chat/completions";
     const API_KEY    = "sk-XVUuKiSZQMmkutogcsjjLFcKpwL6lbo0X2Gr77mNwSzjTZhJ";
-    const availableModels = [
-      "gpt-4o",
-      "gemini-2.5-pro",
-      "deepseek-chat",
-      "grok-4"
-    ];
     const INITIAL_C  = 8;
     const PROMO_MULTI= ["wh5109sh","37ffjshg","8ehfy6w"];
     const PROMO_UNLIM= "xallai21001";
@@ -304,12 +297,6 @@
         persist();
       }
     };
-
-    elems.userInput.addEventListener("keydown", e=>{
-      if(e.key==="Enter" && !e.shiftKey && !isStreaming) {
-        e.preventDefault(); sendMessage();
-      }
-    });
 
     function askName() {
       if(userName) return startChat();
