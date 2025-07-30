@@ -97,7 +97,7 @@
 
   <footer class="footer">
     <p style="direction:ltr">
-      &copy; <span id="year"></span> Enter Code - All rights reserved.
+      &copy; <span id="year"></span> MAi - All rights reserved.
     </p>
   </footer>
 
@@ -306,12 +306,6 @@
         persist();
       }
     };
-
-    elems.userInput.addEventListener("keydown", e=>{
-      if(e.key==="Enter" && !e.shiftKey && !isStreaming) {
-        e.preventDefault(); sendMessage();
-      }
-    });
 
     function askName() {
       if(userName) return startChat();
